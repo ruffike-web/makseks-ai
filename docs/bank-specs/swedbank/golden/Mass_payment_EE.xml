@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09">
+	<CstmrCdtTrfInitn>
+		<GrpHdr>
+			<MsgId>MSG03</MsgId>
+			<CreDtTm>2026-06-01T04:49:45</CreDtTm>
+			<NbOfTxs>4</NbOfTxs>
+			<CtrlSum>28.00</CtrlSum>
+			<InitgPty>
+				<Nm>AS TEST COMPANY</Nm>
+			</InitgPty>
+		</GrpHdr>
+		<PmtInf>
+			<PmtInfId>PMNT03</PmtInfId>
+			<PmtMtd>TRF</PmtMtd>
+			<NbOfTxs>4</NbOfTxs>
+			<CtrlSum>28.00</CtrlSum>
+			<PmtTpInf>
+				<SvcLvl>
+					<Cd>SEPA</Cd>
+				</SvcLvl>
+				<CtgyPurp>
+					<Cd>SALA</Cd>
+				</CtgyPurp>
+			</PmtTpInf>
+			<ReqdExctnDt>
+				<Dt>2026-06-01</Dt>
+			</ReqdExctnDt>
+			<Dbtr>
+				<Nm>AS TEST COMPANY</Nm>
+			</Dbtr>
+			<DbtrAcct>
+				<Id>
+					<IBAN>EE452200123456789012</IBAN>
+				</Id>
+			</DbtrAcct>
+			<DbtrAgt>
+				<FinInstnId>
+					<BICFI>HABAEE2X</BICFI>
+				</FinInstnId>
+			</DbtrAgt>
+			<!-- ==================================================== -->
+			<!-- Payment 1: Example with Ustrd remittance information -->
+			<!-- ==================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX08</InstrId>
+					<EndToEndId>ID000005</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">6.00</InstdAmt>
+				</Amt>
+				<Cdtr>
+					<Nm>Jane Smith</Nm>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>EE802200200000000004</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Ustrd>Payment explanation</Ustrd>
+				</RmtInf>
+			</CdtTrfTxInf>
+			<!-- ==================================================================================== -->
+			<!-- Payment 2: Example with Ustrd remittance information and additional data on Creditor -->
+			<!-- ==================================================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX09</InstrId>
+					<EndToEndId>ID000006</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">6.00</InstdAmt>
+				</Amt>
+				<Cdtr>
+					<Nm>Jane Smith</Nm>
+					<PstlAdr>
+						<TwnNm>Tallinn</TwnNm>
+						<Ctry>EE</Ctry>
+					</PstlAdr>
+					<Id>
+						<PrvtId>
+							<Othr>
+								<Id>49000000001</Id>
+								<SchmeNm>
+									<Cd>NIDN</Cd>
+								</SchmeNm>
+							</Othr>
+						</PrvtId>
+					</Id>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>EE802200200000000004</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Ustrd>Payment explanation</Ustrd>
+				</RmtInf>
+			</CdtTrfTxInf>
+			<!-- =================================================== -->
+			<!-- Payment 3: Example with Strd remittance information -->
+			<!-- =================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX10</InstrId>
+					<EndToEndId>ID000007</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">8.00</InstdAmt>
+				</Amt>
+				<Cdtr>
+					<Nm>John Smith</Nm>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>EE981010012345678900</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Strd>
+						<CdtrRefInf>
+							<Tp>
+								<CdOrPrtry>
+									<Cd>SCOR</Cd>
+								</CdOrPrtry>
+							</Tp>
+							<Ref>88069474660</Ref>
+						</CdtrRefInf>
+					</Strd>
+				</RmtInf>
+			</CdtTrfTxInf>
+			<!-- =================================================================================================== -->
+			<!-- Payment 4:  Example with Ustrd + Strd remittance information (allowed in EE domestic payments only) -->
+			<!-- =================================================================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX11</InstrId>
+					<EndToEndId>ID000008</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">8.00</InstdAmt>
+				</Amt>
+				<Cdtr>
+					<Nm>John Smith</Nm>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>EE981010012345678900</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Ustrd>Payment explanation</Ustrd>
+					<Strd>
+						<CdtrRefInf>
+							<Tp>
+								<CdOrPrtry>
+									<Cd>SCOR</Cd>
+								</CdOrPrtry>
+							</Tp>
+							<Ref>88069474660</Ref>
+						</CdtrRefInf>
+					</Strd>
+				</RmtInf>
+			</CdtTrfTxInf>
+		</PmtInf>
+	</CstmrCdtTrfInitn>
+</Document>

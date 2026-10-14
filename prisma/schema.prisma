@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client"
+  output = "../src/generated/prisma"
+}
+datasource db {
+  provider = "sqlite"
+}
+model Settings {
+  id String @id @default(cuid())
+  data String
+  updatedAt DateTime @updatedAt
+}
+model Invoice {
+  id String @id @default(cuid())
+  companyId String @default("default")
+  version Int @default(0)
+  sourceFileName String
+  sourceFileHash String?
+  data String
+  originalData String
+  provenance String @default("{}")
+  extractionMethod String
+  extractionNote String?
+  accountCandidates String @default("[]")
+  approvedAt DateTime?
+  approvalContext String?
+  duplicateAcknowledged Boolean @default(false)
+  accountChangeAcknowledged Boolean @default(false)
+  exportedAt DateTime?
+  exportedVersion Int?
+  archivedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([sourceFileHash])
+  @@index([companyId])
+}
+model Supplier {
+  id String @id @default(cuid())
+  identity String
+  companyId String @default("default")
+  data String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([companyId, identity])
+}
+model ExportRecord {
+  id String @id
+  companyId String @default("default")
+  bank String
+  invoiceIds String
+  total String
+  xmlHash String
+  fingerprints String @default("[]")
+  createdAt DateTime @default(now())
+  @@index([companyId])
+}

@@ -1,0 +1,8 @@
+node_modules/
+.next/
+src/generated/
+docs/bank-specs/
+docs/archive/
+data/
+test-results/
+package-lock.json

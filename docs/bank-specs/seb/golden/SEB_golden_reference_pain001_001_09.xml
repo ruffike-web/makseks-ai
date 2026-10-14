@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CstmrCdtTrfInitn>
+    <GrpHdr>
+      <MsgId>APP-20261006-0001</MsgId>
+      <CreDtTm>2026-10-06T09:30:00+03:00</CreDtTm>
+      <NbOfTxs>2</NbOfTxs>
+      <CtrlSum>205.30</CtrlSum>
+      <InitgPty>
+        <Nm>Näidisettevõte OÜ</Nm>
+      </InitgPty>
+    </GrpHdr>
+    <PmtInf>
+      <PmtInfId>PMT-20261020-001</PmtInfId>
+      <PmtMtd>TRF</PmtMtd>
+      <NbOfTxs>1</NbOfTxs>
+      <CtrlSum>125.40</CtrlSum>
+      <PmtTpInf>
+        <SvcLvl><Cd>SEPA</Cd></SvcLvl>
+      </PmtTpInf>
+      <ReqdExctnDt><Dt>2026-10-20</Dt></ReqdExctnDt>
+      <Dbtr><Nm>Näidisettevõte OÜ</Nm></Dbtr>
+      <DbtrAcct><Id><IBAN>EE702200000000000000</IBAN></Id></DbtrAcct>
+      <DbtrAgt><FinInstnId><BICFI>EEUHEE2X</BICFI></FinInstnId></DbtrAgt>
+      <CdtTrfTxInf>
+        <PmtId><EndToEndId>INV-1001-20261020</EndToEndId></PmtId>
+        <Amt><InstdAmt Ccy="EUR">125.40</InstdAmt></Amt>
+        <Cdtr>
+          <Nm>Näidistarnija OÜ</Nm>
+          <PstlAdr><TwnNm>Tallinn</TwnNm><Ctry>EE</Ctry></PstlAdr>
+        </Cdtr>
+        <CdtrAcct><Id><IBAN>EE516890000000000000</IBAN></Id></CdtrAcct>
+        <RmtInf>
+          <Strd>
+            <CdtrRefInf>
+              <Tp><CdOrPrtry><Cd>SCOR</Cd></CdOrPrtry></Tp>
+              <Ref>1231241</Ref>
+            </CdtrRefInf>
+            <AddtlRmtInf>Arve INV-1001, klient C-42</AddtlRmtInf>
+          </Strd>
+        </RmtInf>
+      </CdtTrfTxInf>
+    </PmtInf>
+    <PmtInf>
+      <PmtInfId>PMT-20261025-002</PmtInfId>
+      <PmtMtd>TRF</PmtMtd>
+      <NbOfTxs>1</NbOfTxs>
+      <CtrlSum>79.90</CtrlSum>
+      <PmtTpInf>
+        <SvcLvl><Cd>SEPA</Cd></SvcLvl>
+      </PmtTpInf>
+      <ReqdExctnDt><Dt>2026-10-25</Dt></ReqdExctnDt>
+      <Dbtr><Nm>Näidisettevõte OÜ</Nm></Dbtr>
+      <DbtrAcct><Id><IBAN>EE702200000000000000</IBAN></Id></DbtrAcct>
+      <DbtrAgt><FinInstnId><BICFI>EEUHEE2X</BICFI></FinInstnId></DbtrAgt>
+      <CdtTrfTxInf>
+        <PmtId><EndToEndId>INV-1002-20261025</EndToEndId></PmtId>
+        <Amt><InstdAmt Ccy="EUR">79.90</InstdAmt></Amt>
+        <Cdtr>
+          <Nm>Teine Tarnija OÜ</Nm>
+          <PstlAdr><TwnNm>Tartu</TwnNm><Ctry>EE</Ctry></PstlAdr>
+        </Cdtr>
+        <CdtrAcct><Id><IBAN>EE561010000000000000</IBAN></Id></CdtrAcct>
+        <RmtInf><Ustrd>Arve INV-1002</Ustrd></RmtInf>
+      </CdtTrfTxInf>
+    </PmtInf>
+  </CstmrCdtTrfInitn>
+</Document>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<CstmrCdtTrfInitn>
+		<GrpHdr>
+			<MsgId>20190131/114917</MsgId>
+			<CreDtTm>2022-05-30T08:49:17.070</CreDtTm>
+			<NbOfTxs>1</NbOfTxs>
+			<InitgPty>
+				<Nm>TEST OÜ</Nm>
+			</InitgPty>
+		</GrpHdr>
+		<PmtInf>
+			<PmtInfId>406761</PmtInfId>
+			<PmtMtd>TRF</PmtMtd>
+			<BtchBookg>false</BtchBookg>
+			<NbOfTxs>1</NbOfTxs>
+			<PmtTpInf>
+				<SvcLvl>
+					<Cd>SEPA</Cd>
+				</SvcLvl>
+			</PmtTpInf>
+			<ReqdExctnDt>2022-09-28</ReqdExctnDt>
+			<Dbtr>
+				<Nm>TEST OÜ</Nm>
+				<PstlAdr>
+					<Ctry>EE</Ctry>
+					<AdrLine>Leie küla</AdrLine>
+					<AdrLine>Viljandi 70303</AdrLine>
+				</PstlAdr>
+			</Dbtr>
+			<DbtrAcct>
+				<Id>
+					<IBAN>EE214204200000000000</IBAN>
+				</Id>
+				<Ccy>EUR</Ccy>
+			</DbtrAcct>
+			<DbtrAgt>
+				<FinInstnId>
+					<BIC>EKRDEE22</BIC>
+				</FinInstnId>
+			</DbtrAgt>
+			<ChrgBr>SLEV</ChrgBr>
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>410</InstrId>
+					<EndToEndId>410</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">155</InstdAmt>
+				</Amt>
+				<CdtrAgt>
+					<FinInstnId>
+						<BIC>KEYTBEBBXXX</BIC>
+					</FinInstnId>
+				</CdtrAgt>
+				<Cdtr>
+					<Nm>Jan Holmes</Nm>
+					<PstlAdr>
+						<Ctry>BE</Ctry>
+					</PstlAdr>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>BE26651158112329</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RgltryRptg>
+					<Dtls>
+						<Ctry>BE</Ctry>
+					</Dtls>
+				</RgltryRptg>
+				<RmtInf>
+					<Ustrd>Gateway SP</Ustrd>
+					<Strd>
+						<CdtrRefInf>
+							<Tp>
+								<CdOrPrtry>
+									<Cd>SCOR</Cd>
+								</CdOrPrtry>
+							</Tp>
+							<Ref></Ref>
+						</CdtrRefInf>
+					</Strd>
+				</RmtInf>
+			</CdtTrfTxInf>			
+		</PmtInf>
+	</CstmrCdtTrfInitn>
+</Document>

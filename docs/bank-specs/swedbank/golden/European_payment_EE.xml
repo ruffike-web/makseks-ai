@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09">
+	<CstmrCdtTrfInitn>
+		<GrpHdr>
+			<MsgId>MSG04</MsgId>
+			<CreDtTm>2026-06-01T04:49:45</CreDtTm>
+			<NbOfTxs>2</NbOfTxs>
+			<CtrlSum>2.00</CtrlSum>
+			<InitgPty>
+				<Nm>AS TEST COMPANY</Nm>
+			</InitgPty>
+		</GrpHdr>
+		<PmtInf>
+			<PmtInfId>PMNT04</PmtInfId>
+			<PmtMtd>TRF</PmtMtd>
+			<NbOfTxs>2</NbOfTxs>
+			<CtrlSum>2.00</CtrlSum>
+			<PmtTpInf>
+				<SvcLvl>
+					<Cd>SEPA</Cd>
+				</SvcLvl>
+			</PmtTpInf>
+			<ReqdExctnDt>
+				<Dt>2026-06-01</Dt>
+			</ReqdExctnDt>
+			<Dbtr>
+				<Nm>AS TEST COMPANY</Nm>
+			</Dbtr>
+			<DbtrAcct>
+				<Id>
+					<IBAN>EE452200123456789012</IBAN>
+				</Id>
+			</DbtrAcct>
+			<DbtrAgt>
+				<FinInstnId>
+					<BICFI>HABAEE2X</BICFI>
+				</FinInstnId>
+			</DbtrAgt>
+			<!-- ==================================================== -->
+			<!-- Payment 1: Example with Ustrd remittance information -->
+			<!-- ==================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX12</InstrId>
+					<EndToEndId>ID000009</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">1.00</InstdAmt>
+				</Amt>
+				<Cdtr>
+					<Nm>SA Company</Nm>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>BE12400123456710</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Ustrd>Payment explanation</Ustrd>
+				</RmtInf>
+			</CdtTrfTxInf>
+			<!-- =================================================================================================== -->
+			<!-- Payment 2: Example with (ISO 11649 RF) Strd remittance information and additional data on Creditor  -->
+			<!-- =================================================================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX13</InstrId>
+					<EndToEndId>ID000010</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">1.00</InstdAmt>
+				</Amt>
+				<Cdtr>
+					<Nm>SA Company</Nm>
+					<PstlAdr>
+						<TwnNm>Brussels</TwnNm>
+						<Ctry>BE</Ctry>
+					</PstlAdr>
+					<Id>
+						<OrgId>
+							<LEI>5493001KJTIIGC8Y1R12</LEI>
+						</OrgId>
+					</Id>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>BE12400123456710</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Strd>
+						<CdtrRefInf>
+							<Tp>
+								<CdOrPrtry>
+									<Cd>SCOR</Cd>
+								</CdOrPrtry>
+								<Issr>ISO</Issr>
+							</Tp>
+							<Ref>RF18539007547034</Ref>
+						</CdtrRefInf>
+					</Strd>
+				</RmtInf>
+			</CdtTrfTxInf>
+		</PmtInf>
+	</CstmrCdtTrfInitn>
+</Document>

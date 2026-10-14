@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09">
+	<CstmrCdtTrfInitn>
+		<GrpHdr>
+			<MsgId>MSG01</MsgId>
+			<CreDtTm>2026-06-01T04:49:45</CreDtTm>
+			<NbOfTxs>3</NbOfTxs>
+			<CtrlSum>123.50</CtrlSum>
+			<InitgPty>
+				<Nm>AS TEST COMPANY</Nm>
+			</InitgPty>
+		</GrpHdr>
+		<PmtInf>
+			<PmtInfId>PMNT01</PmtInfId>
+			<PmtMtd>TRF</PmtMtd>
+			<NbOfTxs>3</NbOfTxs>
+			<CtrlSum>123.50</CtrlSum>
+			<PmtTpInf>
+				<SvcLvl>
+					<Cd>NURG</Cd>
+				</SvcLvl>
+			</PmtTpInf>
+			<ReqdExctnDt>
+				<Dt>2026-06-01</Dt>
+			</ReqdExctnDt>
+			<Dbtr>
+				<Nm>AS TEST COMPANY</Nm>
+			</Dbtr>
+			<DbtrAcct>
+				<Id>
+					<IBAN>EE452200123456789012</IBAN>
+				</Id>
+			</DbtrAcct>
+			<DbtrAgt>
+				<FinInstnId>
+					<BICFI>HABAEE2X</BICFI>
+				</FinInstnId>
+			</DbtrAgt>
+			<!-- ======================================================================== -->
+			<!-- Payment 1: Example with non-IBAN creditor account and structured address -->
+			<!-- ======================================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX01</InstrId>
+					<EndToEndId>123456789</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="USD">10.50</InstdAmt>
+				</Amt>
+				<CdtrAgt>
+					<FinInstnId>
+						<BICFI>IRVTUS3N</BICFI>
+					</FinInstnId>
+				</CdtrAgt>
+				<Cdtr>
+					<Nm>Global Supplies Inc</Nm>
+					<PstlAdr>
+						<StrtNm>Fifth Avenue</StrtNm>
+						<BldgNb>2100</BldgNb>
+						<PstCd>10118</PstCd>
+						<TwnNm>New York</TwnNm>
+						<CtrySubDvsn>NY</CtrySubDvsn>
+						<Ctry>US</Ctry>
+					</PstlAdr>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<Othr>
+							<Id>987654321</Id>
+						</Othr>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Ustrd>Invoice 123</Ustrd>
+				</RmtInf>
+			</CdtTrfTxInf>
+			<!-- ========================================== -->
+			<!-- Payment 2: Example with Intermediary agent -->
+			<!-- ========================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX02</InstrId>
+					<EndToEndId>234567890</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="GBP">111.00</InstdAmt>
+				</Amt>
+				<IntrmyAgt1>
+					<FinInstnId>
+						<BICFI>NWBKGB2L</BICFI>
+					</FinInstnId>
+				</IntrmyAgt1>
+				<CdtrAgt>
+					<FinInstnId>
+						<BICFI>KREDBEBB</BICFI>
+					</FinInstnId>
+				</CdtrAgt>
+				<Cdtr>
+					<Nm>John Smith</Nm>
+					<PstlAdr>
+						<StrtNm>Hoogstraat</StrtNm>
+						<BldgNb>6</BldgNb>
+						<BldgNm>Premium Tower</BldgNm>
+						<Flr>18</Flr>
+						<PstCd>1000</PstCd>
+						<TwnNm>Brussels</TwnNm>
+						<Ctry>BE</Ctry>
+					</PstlAdr>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>BE12400123456710</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Ustrd>Invoice 123</Ustrd>
+				</RmtInf>
+			</CdtTrfTxInf>
+			<!-- ====================================================== -->
+			<!-- Payment 3: Example with foreign currency to local bank -->
+			<!-- ====================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX03</InstrId>
+					<EndToEndId>345678901</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="USD">2.00</InstdAmt>
+				</Amt>
+				<IntrmyAgt1>
+					<FinInstnId>
+						<BICFI>IRVTUS3N</BICFI>
+					</FinInstnId>
+				</IntrmyAgt1>
+				<CdtrAgt>
+					<FinInstnId>
+						<BICFI>EEUHEE2X</BICFI>
+					</FinInstnId>
+				</CdtrAgt>
+				<Cdtr>
+					<Nm>Test Person</Nm>
+					<PstlAdr>
+						<StrtNm>Liivalaia</StrtNm>
+						<BldgNb>8</BldgNb>
+						<PstCd>15040</PstCd>
+						<TwnNm>Tallinn</TwnNm>
+						<Ctry>EE</Ctry>
+					</PstlAdr>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>EE981010012345678900</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Ustrd>Invoice 123</Ustrd>
+				</RmtInf>
+			</CdtTrfTxInf>
+		</PmtInf>
+	</CstmrCdtTrfInitn>
+</Document>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09">
+	<CstmrCdtTrfInitn>
+		<GrpHdr>
+			<MsgId>MSG02</MsgId>
+			<CreDtTm>2026-06-01T04:49:45</CreDtTm>
+			<NbOfTxs>3</NbOfTxs>
+			<CtrlSum>3.00</CtrlSum>
+			<InitgPty>
+				<Nm>AS TEST COMPANY</Nm>
+			</InitgPty>
+		</GrpHdr>
+		<PmtInf>
+			<PmtInfId>PMNT02</PmtInfId>
+			<PmtMtd>TRF</PmtMtd>
+			<NbOfTxs>3</NbOfTxs>
+			<CtrlSum>3.00</CtrlSum>
+			<PmtTpInf>
+				<SvcLvl>
+					<Cd>SEPA</Cd>
+				</SvcLvl>
+			</PmtTpInf>
+			<ReqdExctnDt>
+				<Dt>2026-06-01</Dt>
+			</ReqdExctnDt>
+			<Dbtr>
+				<Nm>AS TEST COMPANY</Nm>
+			</Dbtr>
+			<DbtrAcct>
+				<Id>
+					<IBAN>EE452200123456789012</IBAN>
+				</Id>
+			</DbtrAcct>
+			<DbtrAgt>
+				<FinInstnId>
+					<BICFI>HABAEE2X</BICFI>
+				</FinInstnId>
+			</DbtrAgt>
+			<!-- ==================================================== -->
+			<!-- Payment 1: Example with Ustrd remittance information -->
+			<!-- ==================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX04</InstrId>
+					<EndToEndId>ID000001</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">1.00</InstdAmt>
+				</Amt>
+				<Cdtr>
+					<Nm>AS Firma</Nm>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>EE101010010000000003</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Ustrd>Payment explanation</Ustrd>
+				</RmtInf>
+			</CdtTrfTxInf>
+			<!-- =================================================================================== -->
+			<!-- Payment 2: Example with Strd remittance information and additional data on Creditor -->
+			<!-- =================================================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX05</InstrId>
+					<EndToEndId>ID000002</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">1.00</InstdAmt>
+				</Amt>
+				<Cdtr>
+					<Nm>AS Firma</Nm>
+					<PstlAdr>
+						<TwnNm>Tallinn</TwnNm>
+						<Ctry>EE</Ctry>
+					</PstlAdr>
+					<Id>
+						<OrgId>
+							<Othr>
+								<Id>12000000</Id>
+								<SchmeNm>
+									<Cd>COID</Cd>
+								</SchmeNm>
+							</Othr>
+						</OrgId>
+					</Id>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>EE101010010000000003</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Strd>
+						<CdtrRefInf>
+							<Tp>
+								<CdOrPrtry>
+									<Cd>SCOR</Cd>
+								</CdOrPrtry>
+							</Tp>
+							<Ref>8806947</Ref>
+						</CdtrRefInf>
+					</Strd>
+				</RmtInf>
+			</CdtTrfTxInf>
+			<!-- ============================================================================================================== -->
+			<!-- Payment 3:  Example with Ustrd + Strd remittance information (allowed in EE intrabank, domestic payments only) -->
+			<!-- ============================================================================================================== -->
+			<CdtTrfTxInf>
+				<PmtId>
+					<InstrId>TRX06</InstrId>
+					<EndToEndId>ID000003</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">1.00</InstdAmt>
+				</Amt>
+				<Cdtr>
+					<Nm>AS Firma</Nm>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>EE101010010000000003</IBAN>
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Ustrd>Payment explanation</Ustrd>
+					<Strd>
+						<CdtrRefInf>
+							<Tp>
+								<CdOrPrtry>
+									<Cd>SCOR</Cd>
+								</CdOrPrtry>
+							</Tp>
+							<Ref>88069474660</Ref>
+						</CdtrRefInf>
+					</Strd>
+				</RmtInf>
+			</CdtTrfTxInf>
+		</PmtInf>
+	</CstmrCdtTrfInitn>
+</Document>

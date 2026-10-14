@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<CstmrCdtTrfInitn>
+		<GrpHdr>
+			<MsgId>MSG0001</MsgId><!-- Message unique ID-->
+			<CreDtTm>2024-03-17T08:01:01</CreDtTm><!-- Message creation date-->
+			<NbOfTxs>1</NbOfTxs><!-- Number of payments in the file-->
+			<CtrlSum>10.11</CtrlSum><!-- Total amount of payments included in the message-->
+			<InitgPty>
+				<Nm>Name</Nm><!-- Name of initiating party-->
+			</InitgPty>
+		</GrpHdr>
+		<PmtInf>
+			<PmtInfId>0001</PmtInfId><!-- Name of initiating party-->
+			<PmtMtd>TRF</PmtMtd>
+			<NbOfTxs>1</NbOfTxs><!-- Number of payments in the payment information block-->
+			<CtrlSum>10.11</CtrlSum><!-- Total amount of payments included in the group -->
+			<ReqdExctnDt>
+				<Dt>2024-03-17</Dt><!-- Payments execution date -->
+			</ReqdExctnDt>
+			<Dbtr>
+				<Nm>Debtor name</Nm><!-- Debtor's name -->
+			</Dbtr>
+			<DbtrAcct>
+				<Id>
+					<IBAN>AA000000000000000001</IBAN><!-- Debtor's account IBAN -->
+				</Id>
+			</DbtrAcct>
+			<DbtrAgt>
+				<FinInstnId>
+					<BICFI>AAAABBCC123</BICFI><!-- Debtor's bank BIC code -->
+				</FinInstnId>
+			</DbtrAgt>
+			<CdtTrfTxInf>
+				<PmtId>
+					<EndToEndId>123AAA</EndToEndId><!-- Unique payment reference -->
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="EUR">10.11</InstdAmt><!-- Payment amount and the currency -->
+				</Amt>
+				<Cdtr>
+					<Nm>Creditor name</Nm><!-- Creditor's name -->
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<IBAN>BB000000000000000001</IBAN><!-- Creditor's account IBAN -->
+					</Id>
+				</CdtrAcct>
+				<RmtInf>
+					<Ustrd>free text</Ustrd><!-- Payment description -->
+				</RmtInf>
+			</CdtTrfTxInf>
+		</PmtInf>
+	</CstmrCdtTrfInitn>
+</Document>

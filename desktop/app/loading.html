@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="et">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-GNHKA/EvJyb4tex2NXupnORQOZRPWo8MYVxWAzrWG2M='"
+    />
+    <title>Makseks AI</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #f6f8f4;
+        color: #163f34;
+        font:
+          16px "Segoe UI",
+          sans-serif;
+      }
+      main {
+        text-align: center;
+      }
+      h1 {
+        font-size: 32px;
+        margin-bottom: 12px;
+      }
+      p {
+        color: #60786e;
+      }
+      .loader {
+        width: 32px;
+        height: 32px;
+        border: 3px solid #dce8dc;
+        border-top-color: #246a53;
+        border-radius: 50%;
+        margin: 30px auto;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .loader {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Makseks AI</h1>
+      <p>Avan sinu töölauda…</p>
+      <div class="loader" role="status" aria-label="Programm käivitub"></div>
+    </main>
+    <script>
+      if (new URLSearchParams(location.search).get("language") === "en") {
+        document.documentElement.lang = "en";
+        document.querySelector("p").textContent = "Opening your workspace…";
+        document.querySelector(".loader").setAttribute("aria-label", "Application is starting");
+      }
+    </script>
+  </body>
+</html>

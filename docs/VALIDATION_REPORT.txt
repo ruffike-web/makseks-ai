@@ -1,0 +1,21 @@
+Historical input report from 06.10.2026. Current complete schema validation: see WINDOWS_VALIDATION.md and bank-specs/README.md.
+
+Validation report
+=================
+
+SEB_golden_reference_pain001_001_09.xml
+- XML well-formed: PASS
+- Valid against supplied pain.001.001.09_SEBv2.xsd: PASS
+
+LHV_golden_reference_pain001_001_09.xml
+- XML well-formed: PASS
+- Supplied LHV main pain.001.001.09 schema imports supl.001.001.01.xsd, which was not supplied.
+- Main-schema validation was tested with a local minimal stub for that missing supplementary namespace: PASS.
+- This does NOT count as validation against LHV's complete official schema package.
+- Real LHV internet-bank import test is still required.
+
+Design checks
+- 2 total transactions; GroupHeader CtrlSum = 205.30
+- Payments have two different execution dates and therefore are intentionally split into two PmtInf blocks.
+- First payment uses structured SCOR reference plus AddtlRmtInf.
+- Second payment uses unstructured remittance description.

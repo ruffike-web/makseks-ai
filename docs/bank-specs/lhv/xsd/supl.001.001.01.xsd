@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="urn:iso:std:iso:20022:tech:xsd:supl.001.001.01"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="urn:iso:std:iso:20022:tech:xsd:supl.001.001.01">
+    <xs:element name="Document" type="ExtDocument"/>
+    <xs:simpleType name="ExtPartyCode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DEBTOR"/>
+            <xs:enumeration value="DEBTOR_AGENT"/>
+            <xs:enumeration value="CREDITOR"/>
+            <xs:enumeration value="CREDITOR_AGENT"/>
+            <xs:enumeration value="ULTIMATE_DEBTOR"/>
+            <xs:enumeration value="ULTIMATE_CREDITOR"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="ESTPartyData">
+        <xs:sequence>
+            <xs:element name="party" minOccurs="0" type="ExtPartyCode"/>
+            <xs:element name="key" minOccurs="1" type="ExtMax140Text"/>
+            <xs:element name="value" minOccurs="1" type="ExtMax140Text"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="ExtMax140Text">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="140"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="ExtDocument">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="partyData" type="ESTPartyData"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
