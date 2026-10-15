@@ -22,4 +22,5 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm audit --omit=dev
+      - run: npm run audit:dependencies
       - run: node scripts/audit-source.mjs

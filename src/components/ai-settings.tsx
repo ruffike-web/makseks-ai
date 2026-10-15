@@ -18,7 +18,7 @@ export function AISettings({
 }: {
   companyId: string;
   provider: AIProviderId;
-  providers: Record<AIProviderId, { configured: boolean; model: string }>;
+  providers: Record<AIProviderId, { configured: boolean; model: string; locked?: boolean }>;
   refresh: () => Promise<unknown>;
   onProviderChanged: () => void;
   notify: (message: string) => void;
@@ -52,6 +52,11 @@ export function AISettings({
   return (
     <section className="panel">
       <h2>{t("AI ühendus")}</h2>
+      {providers[provider].locked && (
+        <p className="notice warning" role="alert">
+          {t("Salvestatud API-võtit ei saa selle Windowsi kasutaja all avada. Sisesta võti uuesti või eemalda see. Arved ja tarnijad on alles.")}
+        </p>
+      )}
       {provider === "groq" && (
         <p className="help">
           {t(
@@ -208,7 +213,7 @@ export function AISettings({
         >
           {t("Salvesta AI seaded")}
         </button>
-        {configured && (
+        {(configured || providers[provider].locked) && (
           <button
             type="button"
             className="button secondary"

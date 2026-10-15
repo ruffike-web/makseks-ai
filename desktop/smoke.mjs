@@ -225,14 +225,13 @@ try {
   });
   await page
     .getByRole("row")
-    .filter({ hasText: "desktop-fixture.pdf" })
+    .filter({ hasText: "TEST-1" })
     .getByRole("button", { name: "Kontrolli", exact: false })
     .click();
   const review = page.getByRole("dialog");
   await review.getByText("PDF-ist loetud tekst", { exact: true }).click();
   await expect(review.locator("pre")).toContainText("Amount due EUR 104.00");
   await review.getByRole("button", { name: "Sulge arve" }).click();
-  await page.screenshot({ path: "test-results/windows-app.png" });
   console.log(
     "Packaged Windows app: startup, migrations, company creation, API key save/remove, SEB + LHV validated XML downloads and native PDF parsing PASS",
   );

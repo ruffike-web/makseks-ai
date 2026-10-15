@@ -1,6 +1,8 @@
 // UI copy is keyed by its original Estonian text. User-entered data is never passed here.
 export type Language = "et" | "en";
 const entries = `
+Salvestatud API-võtit ei saa selle Windowsi kasutaja all avada. Sisesta võti uuesti või eemalda see. Arved ja tarnijad on alles.|The saved API key cannot be unlocked under this Windows account. Re-enter or remove the key. Your invoices and suppliers are preserved.
+API-võtme turvaline salvestamine ebaõnnestus. Proovi programm taaskäivitada.|The API key could not be stored securely. Try restarting the application.
 PDF-i lehekülje mõõtmed on pildiks teisendamiseks liiga suured. Kasuta teist teenusepakkujat või sisesta andmed käsitsi.|The PDF page dimensions are too large to render. Use another provider or enter the details manually.
 Tarnija nimi ja IBAN viitavad eri salvestatud tarnijatele. Kontrolli algdokumenti ning paranda nimi või konto.|The supplier name and IBAN identify different saved suppliers. Check the original document and correct the name or account.
 Tarnija pangakontod|Supplier bank accounts

@@ -13,17 +13,17 @@ function setup() {
   vi.stubEnv("GROQ_API_KEY", ""); vi.stubEnv("MISTRAL_API_KEY", "");
   return file;
 }
-it("adds provider slots to old config without replacing saved keys, models or consent selection", () => {
+it("adds provider slots to old config without replacing saved keys, models or consent selection", async () => {
   const file = setup();
   writeFileSync(file, JSON.stringify({ provider: "openai", providers: {
     gemini: { apiKey: "g", model: "gemini-old" }, openai: { apiKey: "o", model: "gpt-4.1" }, anthropic: { apiKey: "a", model: "claude-old" },
   } }));
-  expect(readAIConfig()).toMatchObject({ provider: "openai", apiKey: "o", model: "gpt-4.1" });
-  saveAIConfig({ provider: "groq", apiKey: "groq-secret", model: "qwen/qwen3.8-27b" });
-  saveAIConfig({ provider: "mistral", apiKey: "mistral-secret", model: "mistral-ocr-latest" });
-  expect(readAIConfig("groq").apiKey).toBe("groq-secret");
-  expect(readAIConfig("openai").apiKey).toBe("o");
-  expect(JSON.stringify(aiStatus())).not.toContain("secret");
+  expect((await readAIConfig())).toMatchObject({ provider: "openai", apiKey: "o", model: "gpt-4.1" });
+  (await saveAIConfig({ provider: "groq", apiKey: "groq-secret", model: "qwen/qwen3.8-27b" }));
+  (await saveAIConfig({ provider: "mistral", apiKey: "mistral-secret", model: "mistral-ocr-latest" }));
+  expect((await readAIConfig("groq")).apiKey).toBe("groq-secret");
+  expect((await readAIConfig("openai")).apiKey).toBe("o");
+  expect(JSON.stringify((await aiStatus()))).not.toContain("secret");
 });
 it("renders an actual PDF into a PNG for Groq", async () => {
   const urls = await groqDocumentImages({ bytes: invoicePdf(), mime: "application/pdf" });
@@ -43,7 +43,7 @@ it("rejects extreme PDF page dimensions before allocating a screenshot canvas", 
   expect(screenshot).not.toHaveBeenCalled();
 });
 it("rejects over-three-page PDFs without sending a partial document", async () => {
-  setup(); saveAIConfig({ provider: "groq", apiKey: "test", model: "qwen/qwen3.8-27b" });
+  setup(); (await saveAIConfig({ provider: "groq", apiKey: "test", model: "qwen/qwen3.8-27b" }));
   const { PDFParse } = await import("pdf-parse");
   const original = PDFParse.prototype.getInfo;
   vi.spyOn(PDFParse.prototype, "getInfo").mockImplementation(async function (this: InstanceType<typeof PDFParse>, ...args) {
@@ -57,7 +57,7 @@ it("rejects over-three-page PDFs without sending a partial document", async () =
 for (const provider of ["groq", "mistral"] as const) {
   for (const mime of ["application/pdf", "image/png"]) {
     it(`${provider} sends ${mime} to only its own endpoint with its own key`, async () => {
-      setup(); saveAIConfig({ provider, apiKey: `${provider}-secret`, model: provider === "groq" ? "qwen/qwen3.8-27b" : "mistral-ocr-latest" });
+      setup(); (await saveAIConfig({ provider, apiKey: `${provider}-secret`, model: provider === "groq" ? "qwen/qwen3.8-27b" : "mistral-ocr-latest" }));
       const fields = { ...blankInvoice(), supplierName: "Test supplier" };
       const mock = vi.fn().mockResolvedValue(Response.json(provider === "groq"
         ? { choices: [{ finish_reason: "stop", message: { content: JSON.stringify(fields) } }] }
@@ -80,7 +80,7 @@ for (const provider of ["groq", "mistral"] as const) {
     });
   }
   it(`${provider} fails safely on quota errors or malformed output`, async () => {
-    setup(); saveAIConfig({ provider, apiKey: "test", model: "test" });
+    setup(); (await saveAIConfig({ provider, apiKey: "test", model: "test" }));
     for (const response of [new Response("private error", { status: 429 }), Response.json({ document_annotation: null, choices: [{ finish_reason: "length", message: { content: "{}" } }] })]) {
       vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response));
       const result = await extractInvoice(Buffer.from("x"), "image/png", createExtractionProvider(provider));

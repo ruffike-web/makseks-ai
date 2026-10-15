@@ -2,7 +2,7 @@ module.exports = {
   appId: "ee.arvemakseks.desktop",
   productName: "Makseks AI",
   directories: { app: "desktop/app", output: "release" },
-  files: ["package.json", "main.cjs", "paths.cjs", "loading.html", "!node_modules/**/*"],
+  files: ["package.json", "main.cjs", "paths.cjs", "key-protection.cjs", "loading.html", "!node_modules/**/*"],
   extraResources: [
     { from: ".desktop/server", to: "server" },
     { from: ".desktop/runtime", to: "runtime" },

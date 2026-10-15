@@ -5,6 +5,7 @@ const {
   dialog,
   shell,
   session,
+  safeStorage,
 } = require("electron");
 const { spawn } = require("node:child_process");
 const { randomBytes } = require("node:crypto");
@@ -12,6 +13,7 @@ const path = require("node:path");
 const net = require("node:net");
 const fs = require("node:fs");
 const { dataDirectory } = require("./paths.cjs");
+const { attachKeyProtection } = require("./key-protection.cjs");
 
 app.setName("Makseks AI");
 app.setAppUserModelId("ee.arvemakseks.desktop");
@@ -114,8 +116,9 @@ async function launchServer() {
     cwd: serverRoot,
     env: { ...environment(), PORT: String(port) },
     windowsHide: true,
-    stdio: "ignore",
+    stdio: ["ignore", "ignore", "ignore", "ipc"],
   });
+  attachKeyProtection(child, safeStorage);
   const running = child;
   let failed = false;
   running.on("error", () => {

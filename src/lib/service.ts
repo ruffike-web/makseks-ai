@@ -191,6 +191,7 @@ export class InvoiceService {
           supplier: supplier ?? null,
         };
       });
+    const ai = await aiStatus();
     return {
       companyId: this.companyId,
       settings,
@@ -198,11 +199,11 @@ export class InvoiceService {
       invoices,
       suppliers,
       payerIssues: validatePayer(settings),
-      aiConfigured: aiStatus().configured,
+      aiConfigured: ai.configured,
       desktop: process.env.ARVE_DESKTOP === "1",
-      aiModel: aiStatus().model,
-      aiProvider: aiStatus().provider,
-      aiProviders: aiStatus().providers,
+      aiModel: ai.model,
+      aiProvider: ai.provider,
+      aiProviders: ai.providers,
     };
   }
   async state() {

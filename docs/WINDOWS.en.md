@@ -6,9 +6,9 @@
 
 Download a package from the private repository's Releases page:
 
-- **Fast portable (recommended):** extract all of `Makseks-AI-0.7.2-portable-kiire.zip`, then run `Makseks AI.exe`. Keep the entire folder together, including the `Makseks-AI.portable` marker. Do not launch the executable inside the ZIP viewer.
-- **Installer:** run `Makseks-AI-0.7.2-setup.exe`, choose an installation directory and launch the application from the Start menu.
-- **Single-file portable:** `Makseks-AI-0.7.2-portable.exe` extracts the application to a temporary directory on each launch and therefore starts more slowly.
+- **Fast portable (recommended):** extract all of `Makseks-AI-0.7.3-portable-kiire.zip`, then run `Makseks AI.exe`. Keep the entire folder together, including the `Makseks-AI.portable` marker. Do not launch the executable inside the ZIP viewer.
+- **Installer:** run `Makseks-AI-0.7.3-setup.exe`, choose an installation directory and launch the application from the Start menu.
+- **Single-file portable:** `Makseks-AI-0.7.3-portable.exe` extracts the application to a temporary directory on each launch and therefore starts more slowly.
 
 Windows x64 is required. The runtime and bank schemas are included. The executable is unsigned, so Windows SmartScreen may show an unknown-publisher notice.
 
@@ -69,7 +69,7 @@ Use **File → Open data folder** to locate the active folder:
 - Installed application: `%APPDATA%\Makseks AI`.
 - Portable application: `Makseks-AI-andmed` beside the executable.
 
-`app.db` contains working data. `ai-config.json` contains **unencrypted API keys** and model settings. `ui-preferences.json` stores the language preference. Do not share the data folder. Close the application before backing it up or copying it. Avoid network drives and synchronization of an active SQLite database. Removing an installed application does not remove the data folder.
+`app.db` contains working data. `ai-config.json` contains model settings and **API keys encrypted for the Windows user account**. Existing plaintext keys migrate automatically without creating a plaintext backup. If encryption fails, the app will not save a new key in plaintext. When a key cannot be unlocked, Settings lets you replace or remove it while invoices and suppliers remain accessible. Re-enter keys after moving to another computer or Windows account. Existing older backups may still contain plaintext keys; upgrading does not modify those copies. `ui-preferences.json` stores the language preference. Do not share the data folder. Close the application before backing it up or copying it. Avoid network drives and synchronization of an active SQLite database. Removing an installed application does not remove the data folder.
 
 To import data from an earlier web or desktop version:
 
@@ -91,17 +91,17 @@ Companies, invoices, suppliers and export history are imported. API keys are out
 
 ## Developer checks and packaging
 
-Use Node.js 24 on Windows. See the overview for dependency installation and database setup. Run tests, typecheck, lint and production build before packaging.
+Use Node.js 24 on Windows. See the overview for dependency installation and database setup. Run tests, typecheck, lint, production build, `npm audit --omit=dev` and `npm run audit:dependencies` before packaging. The full audit policy permits only the documented development-only braces advisory; new advisories fail the check.
 
-`npm.cmd run desktop:pack` creates installer, single-file portable and fast ZIP packages and audits their contents. `desktop:smoke` checks the packaged workflow; `desktop:language-smoke` checks language persistence; `desktop:local-smoke` checks local extraction and saved-supplier inheritance; `desktop:portable-smoke -- --fast` checks the ZIP outside the project and all four bank XML profiles. Tests use separate data folders.
+`npm.cmd run desktop:pack` creates installer, single-file portable and fast ZIP packages and audits their contents. `desktop:key-smoke` verifies actual Windows key encryption, migration and recovery; `desktop:smoke` checks the packaged workflow; `desktop:language-smoke` checks language persistence; `desktop:local-smoke` checks local extraction and saved-supplier inheritance; `desktop:portable-smoke -- --fast` checks the ZIP outside the project and all four bank XML profiles. Tests use separate data folders.
 
 For a fresh output folder when an old running executable locks the default one:
 
 ```powershell
-$env:ARVE_RELEASE_DIR='release/build-0.7.2'
+$env:ARVE_RELEASE_DIR='release/build-0.7.3'
 npm.cmd run build
 npm.cmd run desktop:stage
-npx.cmd electron-builder --config desktop/builder.cjs --config.directories.output=release/build-0.7.2 --win --x64 --publish never
+npx.cmd electron-builder --config desktop/builder.cjs --config.directories.output=release/build-0.7.3 --win --x64 --publish never
 node desktop/audit.mjs
 node desktop/fast-portable.mjs
 ```

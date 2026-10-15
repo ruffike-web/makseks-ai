@@ -4,15 +4,15 @@
 
 ## Käivitamine
 
-- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.7.2-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
-- **Paigaldatav:** käivita `release/Makseks-AI-0.7.2-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
-- **Ühe EXE portable:** `release/Makseks-AI-0.7.2-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
+- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.7.3-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
+- **Paigaldatav:** käivita `release/Makseks-AI-0.7.3-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
+- **Ühe EXE portable:** `release/Makseks-AI-0.7.3-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
 
 Paketid on Windows x64 jaoks. Node.js, kohalik server ja pangaskeemid on kaasas. Käsitsi sisestamine, kontroll ja maksefailide loomine töötavad internetita; AI vajab internetti. Programm ei algata makseid. EXE on allkirjastamata: Windows SmartScreen võib kuvada tundmatu avaldaja teate.
 
 ## Seniste andmete säilitamine
 
-Portable-versiooni andmed asuvad EXE kõrval kaustas `Makseks-AI-andmed`. Varasemalt portable-versioonilt uuele üle minnes sulge vana programm ning kopeeri vana `Makseks-AI-andmed` uue EXE kõrvale. Nii säilivad nii andmebaas kui ka API-seaded. Ära kirjuta juba kasutuses andmekausta üle ilma varukoopiata. Installeri uuendus säilitab `%APPDATA%\Makseks AI` andmed.
+Portable-versiooni andmed asuvad EXE kõrval kaustas `Makseks-AI-andmed`. Varasemalt portable-versioonilt uuele üle minnes sulge vana programm ning kopeeri vana `Makseks-AI-andmed` uue EXE kõrvale. Nii säilivad andmebaas ja API-seaded. Versioon 0.7.3 krüpteerib varasemad võtmed automaatselt. Teise arvuti või Windowsi kasutaja all sisesta võtmed uuesti; arved ja tarnijad säilivad. Ära kirjuta juba kasutuses andmekausta üle ilma varukoopiata. Installeri uuendus säilitab `%APPDATA%\Makseks AI` andmed.
 
 Varasema veebirakenduse andmete toomiseks:
 
@@ -31,7 +31,7 @@ Ava **Seaded → Keel / Language** ning vali **Eesti** või **English**. Kasutaj
 
 Impordivaates vali **Andmete lugemine → Kohalik lugemine — ilma AI-teenuseta** ja lisa PDF. See on impordi vaikimisi valik. Programm otsib tekstiga PDF-ist eesti- ja ingliskeelsete väljade nimetuste järgi tarnija nime, registrikoodi, IBAN-i/BIC-i, arve- ja kliendinumbrit, viitenumbrit, kuupäevi ning selgelt märgitud tasumisele kuuluvat summat ja valuutat. Arvutist andmeid välja ei saadeta ning API-võtit ega internetti pole vaja.
 
-Versioon 0.7.2 arvestab PDF-i tekstide tegelikku paiknemist, veerge ja jalust. Mitme konto korral kuvatakse arve kontrollis valik **Tarnija pangakontod**. Vali sobiv konto ja salvesta muudatused. Ebaselge summavorming jääb käsitsi täitmiseks. Varem imporditud arvete andmeid uuesti ei loeta; parandatud lugemist kasutatakse uutel importidel.
+Versioon 0.7.3 arvestab PDF-i tekstide tegelikku paiknemist, veerge ja jalust. Mitme konto korral kuvatakse arve kontrollis valik **Tarnija pangakontod**. Vali sobiv konto ja salvesta muudatused. Ebaselge summavorming jääb käsitsi täitmiseks. Varem imporditud arvete andmeid uuesti ei loeta; parandatud lugemist kasutatakse uutel importidel.
 
 Kui arve nimi ja konto viitavad eri salvestatud tarnijatele, tuleb vastuolu enne kinnitamist parandada.
 
@@ -53,7 +53,7 @@ Valikus on SEB, LHV, Coop Pank ja Swedbank (endine Hansapank). Kõigi maksefaili
 
 **Fail → Ava andmekaust** avab õige kausta: paigaldatud programmil `%APPDATA%\Makseks AI`, portable-versioonil EXE kõrval `Makseks-AI-andmed`.
 
-`app.db` sisaldab tööandmeid. `ai-config.json` sisaldab API-võtmeid ja mudelivalikuid; võtmed on kohalikus failis krüpteerimata, seega ära jaga seda faili ega kogu andmekausta. Väljalaskepaketid ei sisalda sinu arveid, andmebaasi ega võtmeid.
+`app.db` sisaldab tööandmeid. `ai-config.json` sisaldab mudelivalikuid ja Windowsi kasutajakontoga seotud krüpteeritud API-võtmeid. Esimesel käivitamisel viiakse varasemad võtmed automaatselt krüpteeritud kujule ilma lihttekstivarukoopiat loomata. Krüpteerimise vea korral uut võtit lihttekstina ei salvestata. Kui salvestatud võtit ei saa avada, näed seadetes teadet ning saad selle uuesti sisestada või eemaldada. Arved ja tarnijad jäävad kasutatavaks. Ära jaga andmekausta. Vanades varukoopiates võivad võtmed endiselt olla krüpteerimata; uue versiooni käivitamine neid koopiaid ei muuda. Väljalaskepaketid ei sisalda sinu arveid, andmebaasi ega võtmeid.
 
 Sulge programm enne andmekausta varundamist või teise arvutisse kopeerimist. Kiire portable-versiooni teisaldamisel võta kaasa kogu lahtipakitud programmikaust koos andmekaustaga. Sama andmekausta ära kasuta korraga mitmes arvutis ega paiguta aktiivset andmebaasi võrgukettale. Andmebaasi uuendamise ja asendava impordi eel tekib `backups/` kausta koopia. Programmi eemaldamine ei kustuta paigaldatud versiooni andmekausta.
 

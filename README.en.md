@@ -17,13 +17,13 @@ Makseks AI is a Windows application for reviewing purchase invoices and preparin
 
 ## Windows downloads
 
-Version **0.7.2** is available from this private repository's [Releases](https://github.com/ruffike-web/makseks-ai/releases) page. Repository access is required.
+Version **0.7.3** is available from this private repository's [Releases](https://github.com/ruffike-web/makseks-ai/releases) page. Repository access is required.
 
 | Package | Use |
 | --- | --- |
-| `Makseks-AI-0.7.2-portable-kiire.zip` | Recommended portable version. Extract the whole ZIP once and run `Makseks AI.exe`. |
-| `Makseks-AI-0.7.2-setup.exe` | Installer; launch the application from the Start menu. |
-| `Makseks-AI-0.7.2-portable.exe` | Single file that extracts itself on every launch; starts more slowly. |
+| `Makseks-AI-0.7.3-portable-kiire.zip` | Recommended portable version. Extract the whole ZIP once and run `Makseks AI.exe`. |
+| `Makseks-AI-0.7.3-setup.exe` | Installer; launch the application from the Start menu. |
+| `Makseks-AI-0.7.3-portable.exe` | Single file that extracts itself on every launch; starts more slowly. |
 
 Packages target Windows x64 and include their own runtime. No separate Node.js installation or terminal is needed. Executables are unsigned, so Windows may ask for confirmation. Release checksums are provided in `SHA256SUMS.txt`.
 
@@ -41,7 +41,7 @@ Full guide: [English](docs/WINDOWS.en.md) · [eesti keeles](docs/WINDOWS.md).
 
 Local and manual reading do not send invoices to an AI service. AI reading sends the document to the selected provider only with the active company's consent. Loading model lists requires internet access but does not send invoices. Available models, prices and quotas depend on the provider account; refresh the model catalog in Settings.
 
-The database and API settings are stored in the application data folder. **API keys are stored unencrypted in the local `ai-config.json` file.** Do not share this folder or use an active database on a network drive. This is a single-user local application; choosing a company is not a user authorization boundary. Releases and source control do not include real invoices, databases or keys.
+The database and API settings are stored in the application data folder. **The Windows application encrypts API keys in `ai-config.json` using protection tied to the Windows user account.** Existing keys migrate automatically on first launch. Re-enter keys when moving to another computer or user account. The standalone development server (`npm run dev/start`) still stores keys without encryption. Do not share this folder or use an active database on a network drive. This is a single-user local application; choosing a company is not a user authorization boundary. Releases and source control do not include real invoices, databases or keys.
 
 All extracted fields require human review. Parenthesized, malformed or ambiguous amounts are left for manual entry; the application does not choose arbitrarily between multiple accounts. EUR supplier payments are supported. XSD validation does not guarantee bank acceptance: a user has confirmed SEB import; actual LHV, Coop Pank and Swedbank imports still require verification.
 

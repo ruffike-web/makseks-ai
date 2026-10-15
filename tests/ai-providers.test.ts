@@ -17,31 +17,31 @@ function setup() {
   vi.stubEnv("ANTHROPIC_API_KEY", "");
   return file;
 }
-it("migrates legacy Gemini config and isolates provider keys", () => {
+it("migrates legacy Gemini config and isolates provider keys", async () => {
   const file = setup();
   writeFileSync(
     file,
     JSON.stringify({ apiKey: "old-gemini", model: "gemini-test" }),
   );
-  saveAIConfig({ provider: "openai", model: "gpt-4.1" });
-  expect(readAIConfig().apiKey).toBe("");
-  saveAIConfig({
+  (await saveAIConfig({ provider: "openai", model: "gpt-4.1" }));
+  expect((await readAIConfig()).apiKey).toBe("");
+  (await saveAIConfig({
     provider: "openai",
     model: "gpt-4.1",
     apiKey: "openai-secret",
-  });
-  saveAIConfig({ provider: "gemini", model: "gemini-test" });
-  expect(readAIConfig().apiKey).toBe("old-gemini");
+  }));
+  (await saveAIConfig({ provider: "gemini", model: "gemini-test" }));
+  expect((await readAIConfig()).apiKey).toBe("old-gemini");
 });
 for (const provider of ["openai", "anthropic"] as const)
   for (const mime of ["application/pdf", "image/png"]) {
     it(`${provider} sends ${mime} with only its key and validates structured output`, async () => {
       setup();
-      saveAIConfig({
+      (await saveAIConfig({
         provider,
         model: provider === "openai" ? "gpt-6.1-sol" : "claude-sonnet-5-5",
         apiKey: `${provider}-secret`,
-      });
+      }));
       const output = blankInvoice();
       const fetchMock = vi.fn().mockResolvedValue(
         Response.json(
@@ -93,7 +93,7 @@ for (const provider of ["openai", "anthropic"] as const)
 it("rejects incomplete OpenAI output and truncated Claude output", async () => {
   setup();
   for (const provider of ["openai", "anthropic"] as const) {
-    saveAIConfig({ provider, model: "test", apiKey: "key" });
+    (await saveAIConfig({ provider, model: "test", apiKey: "key" }));
     vi.stubGlobal(
       "fetch",
       vi
@@ -117,12 +117,12 @@ it("rejects incomplete OpenAI output and truncated Claude output", async () => {
 
 it("model lookup uses only the requested provider key and excludes incompatible models", async () => {
   setup();
-  saveAIConfig({ provider: "openai", model: "gpt-4.1", apiKey: "openai-only" });
-  saveAIConfig({
+  (await saveAIConfig({ provider: "openai", model: "gpt-4.1", apiKey: "openai-only" }));
+  (await saveAIConfig({
     provider: "anthropic",
     model: "claude-sonnet-4-6",
     apiKey: "claude-only",
-  });
+  }));
   const { availableAIModels, aiStatus } = await import("../src/lib/ai-config");
   const mock = vi
     .fn()
@@ -159,16 +159,16 @@ it("model lookup uses only the requested provider key and excludes incompatible 
   expect(JSON.stringify(mock.mock.calls[1][1].headers)).toContain(
     "claude-only",
   );
-  expect(JSON.stringify(aiStatus())).not.toContain("only");
-  saveAIConfig({ provider: "openai", model: "gpt-4.1", removeKey: true });
+  expect(JSON.stringify((await aiStatus()))).not.toContain("only");
+  (await saveAIConfig({ provider: "openai", model: "gpt-4.1", removeKey: true }));
   await expect(availableAIModels(undefined, "openai")).rejects.toThrow();
-  expect(readAIConfig("anthropic").apiKey).toBe("claude-only");
+  expect((await readAIConfig("anthropic")).apiKey).toBe("claude-only");
 });
 
 it("refusal and invalid structured fields fall back without exposing provider errors", async () => {
   setup();
   const { extractInvoice } = await import("../src/lib/extraction");
-  saveAIConfig({ provider: "openai", model: "gpt-4.1", apiKey: "key" });
+  (await saveAIConfig({ provider: "openai", model: "gpt-4.1", apiKey: "key" }));
   for (const content of [
     [{ type: "refusal", text: "private details" }],
     [

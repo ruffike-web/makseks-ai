@@ -1,11 +1,13 @@
-import { readFileSync, mkdirSync, writeFileSync, renameSync } from "node:fs";
+import { readFileSync, mkdirSync, writeFileSync, renameSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 import { aiProviders, aiProviderIds, type AIProviderId } from "./ai-providers";
+import { protectKeys } from "./ai-key-protection";
 const entrySchema = z.object({
-  apiKey: z.string().trim().max(512),
+  apiKey: z.string().trim().max(512).default(""),
+  protectedApiKey: z.string().min(1).max(8192).optional(),
   model: z
     .string()
     .trim()
@@ -50,7 +52,7 @@ function defaults() {
     },
   };
 }
-function readAll() {
+function readStored(): Config {
   try {
     const raw = JSON.parse(
       readFileSync(/* turbopackIgnore: true */ configPath(), "utf8"),
@@ -66,14 +68,60 @@ function readAll() {
     throw new Error("AI seadistuse lugemine ebaõnnestus.");
   }
 }
-export function readAIConfig(provider?: AIProviderId) {
-  const all = readAll();
-  const selected = provider || all.provider;
-  return { provider: selected, ...all.providers[selected] };
+type Config = z.infer<typeof schema>;
+// Keep read/migrate/write operations ordered so concurrent requests cannot
+// overwrite a different provider's freshly saved key.
+let queue = Promise.resolve();
+function serialized<T>(action: () => Promise<T>): Promise<T> {
+  const result = queue.then(action);
+  queue = result.then(() => {}, () => {});
+  return result;
 }
-export function aiStatus() {
-  const all = readAll(),
-    current = all.providers[all.provider];
+
+function writeStored(config: Config) {
+  const file = configPath();
+  mkdirSync(dirname(file), { recursive: true });
+  const temp = `${file}.${randomUUID()}.tmp`;
+  try {
+    writeFileSync(temp, JSON.stringify(config), { mode: 0o600, flag: "wx" });
+    renameSync(temp, file);
+  } finally { rmSync(temp, { force: true }); }
+}
+
+async function encryptPlaintext(config: Config) {
+  if (process.env.ARVE_DESKTOP !== "1") return false;
+  const ids = aiProviderIds.filter(id => config.providers[id].apiKey);
+  const encrypted = await protectKeys("encrypt", ids.map(id => config.providers[id].apiKey));
+  for (const [index, id] of ids.entries()) {
+    config.providers[id].protectedApiKey = encrypted[index]!;
+    config.providers[id].apiKey = "";
+  }
+  return ids.length > 0;
+}
+
+async function readAll() {
+  const stored = readStored();
+  if (await encryptPlaintext(stored)) writeStored(stored);
+  const all = structuredClone(stored);
+  const ids = aiProviderIds.filter(id => stored.providers[id].protectedApiKey);
+  const decrypted = await protectKeys("decrypt", ids.map(id => stored.providers[id].protectedApiKey!));
+  const locked = new Set<AIProviderId>();
+  for (const [index, id] of ids.entries()) {
+    all.providers[id].apiKey = decrypted[index] ?? "";
+    if (decrypted[index] === null) locked.add(id);
+  }
+  return { stored, all, locked };
+}
+
+export function readAIConfig(provider?: AIProviderId) {
+  return serialized(async () => {
+    const { all } = await readAll();
+    const selected = provider || all.provider;
+    return { provider: selected, apiKey: all.providers[selected].apiKey, model: all.providers[selected].model };
+  });
+}
+function statusOf({ all, locked }: Awaited<ReturnType<typeof readAll>>) {
+  const current = all.providers[all.provider];
   return {
     provider: all.provider,
     configured: Boolean(current.apiKey),
@@ -84,10 +132,14 @@ export function aiStatus() {
         {
           configured: Boolean(all.providers[id].apiKey),
           model: all.providers[id].model,
+          locked: locked.has(id),
         },
       ]),
-    ) as Record<AIProviderId, { configured: boolean; model: string }>,
+    ) as Record<AIProviderId, { configured: boolean; model: string; locked: boolean }>,
   };
+}
+export function aiStatus() {
+  return serialized(async () => statusOf(await readAll()));
 }
 export function saveAIConfig(input: {
   provider?: AIProviderId;
@@ -95,28 +147,29 @@ export function saveAIConfig(input: {
   model: string;
   removeKey?: boolean;
 }) {
-  const current = readAll(),
-    provider = input.provider || current.provider;
-  current.providers[provider] = entrySchema.parse({
-    apiKey: input.removeKey
-      ? ""
-      : input.apiKey?.trim() || current.providers[provider].apiKey,
-    model: input.model,
+  return serialized(async () => {
+    // Preserve ciphertext, including keys unavailable under another Windows
+    // account. A model/provider change must never silently discard a key.
+    const current = readStored(), provider = input.provider || current.provider;
+    const entry = current.providers[provider];
+    const replacing = input.removeKey || Boolean(input.apiKey?.trim());
+    current.providers[provider] = entrySchema.parse({
+      ...entry,
+      ...(replacing ? { apiKey: input.removeKey ? "" : input.apiKey!.trim(), protectedApiKey: undefined } : {}),
+      model: input.model,
+    });
+    current.provider = provider;
+    const next = schema.parse(current);
+    await encryptPlaintext(next);
+    writeStored(next);
+    return statusOf(await readAll());
   });
-  current.provider = provider;
-  const next = schema.parse(current),
-    file = configPath();
-  mkdirSync(dirname(file), { recursive: true });
-  const temp = `${file}.${randomUUID()}.tmp`;
-  writeFileSync(temp, JSON.stringify(next), { mode: 0o600 });
-  renameSync(temp, file);
-  return aiStatus();
 }
 export async function availableAIModels(
   apiKey?: string,
   provider?: AIProviderId,
 ) {
-  const config = readAIConfig(provider),
+  const config = await readAIConfig(provider),
     key = apiKey?.trim() || config.apiKey;
   if (!key)
     throw new Error(`Sisesta ${aiProviders[config.provider].name} API-võti.`);

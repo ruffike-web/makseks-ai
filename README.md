@@ -17,13 +17,13 @@ Makseks AI on Windowsi rakendus ostuarvete kontrollimiseks ja pankade maksefaili
 
 ## Windowsi programmi kasutamine
 
-Versiooni **0.7.2** failid asuvad selle privaatse repositooriumi [Releases](https://github.com/ruffike-web/makseks-ai/releases) lehel. Ligipääs eeldab repositooriumi õigusi.
+Versiooni **0.7.3** failid asuvad selle privaatse repositooriumi [Releases](https://github.com/ruffike-web/makseks-ai/releases) lehel. Ligipääs eeldab repositooriumi õigusi.
 
 | Pakett | Kasutus |
 | --- | --- |
-| `Makseks-AI-0.7.2-portable-kiire.zip` | Soovitatav portable. Paki kogu ZIP üks kord lahti ja käivita `Makseks AI.exe`. |
-| `Makseks-AI-0.7.2-setup.exe` | Paigaldusviisard ja käivitamine Start-menüüst. |
-| `Makseks-AI-0.7.2-portable.exe` | Üks fail, mis pakib sisu igal käivitusel ajutisse kausta; avaneb aeglasemalt. |
+| `Makseks-AI-0.7.3-portable-kiire.zip` | Soovitatav portable. Paki kogu ZIP üks kord lahti ja käivita `Makseks AI.exe`. |
+| `Makseks-AI-0.7.3-setup.exe` | Paigaldusviisard ja käivitamine Start-menüüst. |
+| `Makseks-AI-0.7.3-portable.exe` | Üks fail, mis pakib sisu igal käivitusel ajutisse kausta; avaneb aeglasemalt. |
 
 Paketid on Windows x64 jaoks. Node.js-i või terminali eraldi vaja ei ole. EXE-d on allkirjastamata ja Windows võib küsida käivituse kinnitust. Kontrollsummad on väljalaske failis `SHA256SUMS.txt`.
 
@@ -41,7 +41,7 @@ Täielik juhend: [eesti keeles](docs/WINDOWS.md) · [in English](docs/WINDOWS.en
 
 Kohalik ja käsitsi lugemine ei saada arveid AI-teenusele. AI-lugemine saadab dokumendi valitud teenusele ainult aktiivse ettevõtte loal. Mudelite laadimine vajab internetti, kuid ei saada arveid. Teenuste hinnad, mudelid ja kvoodid sõltuvad nende kontodest; mudeliloendit saab seadetes värskendada.
 
-Andmebaas ja API-seaded asuvad kasutaja andmekaustas. **API-võtmed on kohalikus `ai-config.json` failis krüpteerimata.** Ära jaga andmekausta ega paiguta aktiivset andmebaasi võrgukettale. See on ühe kohaliku kasutaja tööriist; ettevõtte valik ei ole kasutajakontode ligipääsukontroll. Väljalasked ja repositoorium ei sisalda päris arveid, andmebaase ega võtmeid.
+Andmebaas ja API-seaded asuvad kasutaja andmekaustas. **Windowsi programmis on API-võtmed `ai-config.json` failis krüpteeritud Windowsi kasutajakontoga seotud kaitsega.** Varasemad võtmed teisendatakse esimesel käivitamisel automaatselt. Teise arvuti või kasutaja all tuleb võtmed uuesti sisestada. Eraldi arendusserveri (`npm run dev/start`) võtmefail on endiselt krüpteerimata. Ära jaga andmekausta ega paiguta aktiivset andmebaasi võrgukettale. See on ühe kohaliku kasutaja tööriist; ettevõtte valik ei ole kasutajakontode ligipääsukontroll. Väljalasked ja repositoorium ei sisalda päris arveid, andmebaase ega võtmeid.
 
 Kõik väljad vajavad inimese kontrolli. Sulgudes, vigased või ebaselged summad jäetakse käsitsi täitmiseks; mitme konto vahel automaatselt ei valita. Toetatud on EUR tarnijamaksed. XSD kontroll ei taga internetipanga aktsepteerimist: SEB import on kasutaja kinnitatud; LHV, Coop Panga ja Swedbanki tegelik import vajab veel kontrolli.
 

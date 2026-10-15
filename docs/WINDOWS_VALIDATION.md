@@ -1,5 +1,17 @@
 # Makseks AI 0.3.0 – Windowsi kontroll
 
+## 0.7.3 kontroll – 15.10.2026
+
+- 137 automaattesti 26 failis, TypeScript, ESLint ja tootmisversiooni ehitus läbisid kontrolli.
+- Ehitatud Windowsi programmis kontrolliti tegelikku `safeStorage` / DPAPI krüpteerimist ja dekrüpteerimist: varasema lihttekstivõtme automaatne teisendamine, uue võtme salvestamine, püsimine pärast taaskäivitust, eesti/inglise veateade avamatu võtme korral ning võtme asendamine ja eemaldamine. Arved ja teiste teenuste võtmed säilisid. Avamatu võtme olukord tekitati vigase krüptotekstiga; teise Windowsi kasutajakontoga sisse ei logitud.
+- Pakendatud programmi töövootest läbis ettevõtted, viie teenuse võtmed ja nõusolekud, SEB/LHV XML-i allalaadimise ning PDF-teksti lugemise. Vananenud testivalija parandati: kohalik lugeja tuvastab näidisarve numbri TEST-1 ning tabel kuvab seda failinime asemel. Rakenduse koodi selle tõttu ei muudetud. Peidetud akna ekraanipilt jäeti funktsionaalsest testist välja.
+- Keelekatse ning kohaliku lugemise, mitme konto valiku, käsitsi režiimi ja salvestatud tarnija IBAN-i pärimise katsed läbisid kontrolli.
+- Lõplik kiire portable ZIP pakiti projekti välisesse kausta. Iseseisev käivitumine, andmekausta loomine, mudelivalikud, kõigi nelja panga XSD-eksport, PDF-tekst ja PDF→PNG teisendus läbisid kontrolli.
+- Väljalaske privaatsusaudit läbis 2346 ressursifaili. Pakendatud serveris ei leitud `braces` ega `sprintf-js` pakette. Tootmissõltuvuste audit: 0. Kogu audit: 5 kõrget hoiatust dokumenteeritud arendussõltuvuse `braces` ahelas; uus auditi reegel läbis kontrolli. Uuendatud Electroni allalaadimistööriista proksiliides läbis kohaliku testserveriga ühilduvuskatse.
+- Testid kasutasid eraldi sünteetilisi andmeid ja võtmeid. Päris AI-päringuid, pangaimpordi katseid ega paigaldusviisardi läbimist ei tehtud. Kasutaja olemasolevat andmekausta ei muudetud. Vanemate väljalasete kontrollid allpool on ajaloolised.
+
+English: 0.7.3 passed 137 tests, typecheck, lint, production build, real Windows DPAPI migration/save/restart and locked-key replacement/removal, bilingual workflow, local supplier inheritance and the final ZIP's independent four-bank/PDF checks. Locked-key recovery was simulated with invalid ciphertext, not a second Windows login. Release privacy audit passed; production audit is zero, with five documented development-only braces warnings remaining. No paid AI calls, real bank imports or installer wizard run were performed.
+
 Kontrollitud 08.10.2026 Windows x64 keskkonnas.
 
 - 75 automaattesti 14 failis läbisid kontrolli. Kaetud on nelja panga profiilid ja XSD, makseandmed, ettevõtete eraldamine, andmebaasi migratsioon/import, AI seadete üleminek ning teenusepakkujaga seotud nõusolek. Uus nõusolekuväli ei tühista varasemaid makseandmete kinnitusi.

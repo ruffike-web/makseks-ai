@@ -120,7 +120,7 @@ async function handle(request: Request, context: Context) {
         })
         .strict()
         .parse(body);
-      if (input.provider && input.provider !== readAIConfig().provider) {
+      if (input.provider && input.provider !== (await readAIConfig()).provider) {
         await db.$transaction(async (tx) => {
           const rows = await tx.settings.findMany();
           for (const row of rows) {
@@ -132,7 +132,7 @@ async function handle(request: Request, context: Context) {
           }
         });
       }
-      return json(saveAIConfig(input));
+      return json(await saveAIConfig(input));
     }
     if (
       resource === "ai-config" &&
@@ -152,7 +152,7 @@ async function handle(request: Request, context: Context) {
       const settings = settingsSchema.parse(body);
       if (
         settings.aiEnabled &&
-        settings.aiConsentProvider !== readAIConfig().provider
+        settings.aiConsentProvider !== (await readAIConfig()).provider
       )
         throw new Error(
           "AI-teenusepakkuja on muutunud. Värskenda lehte ja luba arveandmete saatmine valitud teenusele uuesti.",
