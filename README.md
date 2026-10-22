@@ -77,4 +77,10 @@ Töövootestid kasutavad eraldi testandmeid. `desktop:pack` koostab kolm Windows
 - [Väljalasete kontrollid](docs/WINDOWS_VALIDATION.md)
 - [Pangaskeemid ja impordikontroll](docs/bank-specs/README.md)
 
-Repositoorium on esialgu privaatne. Avaliku levitamise või avatud lähtekoodi litsentsi ei ole määratud.
+## Litsents
+
+Makseks AI on tasuta ja avatud lähtekoodiga tarkvara, mida levitatakse MIT-litsentsi alusel. Tarkvara võib kasutada ka ärilistel eesmärkidel.
+
+Tarkvara antakse kasutamiseks olemasoleval kujul, ilma garantiita. Kasutaja peab enne maksefaili panka importimist kontrollima kõiki makseandmeid.
+
+Täielikud litsentsitingimused leiad failist [LICENSE](LICENSE).
