@@ -25,12 +25,14 @@ it("adds provider slots to old config without replacing saved keys, models or co
   expect((await readAIConfig("openai")).apiKey).toBe("o");
   expect(JSON.stringify((await aiStatus()))).not.toContain("secret");
 });
+// A fresh Windows CI runner can take ~30s to load the native renderer and draw
+// the first PDF. Keep the real PNG assertions and a bounded integration timeout.
 it("renders an actual PDF into a PNG for Groq", async () => {
   const urls = await groqDocumentImages({ bytes: invoicePdf(), mime: "application/pdf" });
   expect(urls).toHaveLength(1);
   expect(urls[0]).toMatch(/^data:image\/png;base64,/);
   expect(Buffer.from(urls[0].split(",")[1], "base64").subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
-});
+}, 60000);
 it("rejects extreme PDF page dimensions before allocating a screenshot canvas", async () => {
   const { PDFParse } = await import("pdf-parse");
   // Equal-length replacement preserves this real PDF fixture's xref offsets.

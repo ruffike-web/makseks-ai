@@ -2,6 +2,7 @@
 
 ## 0.7.4 kontroll – 22.10.2026
 
+- GitHubi Windowsi keskkonnas ületas esimene tegeliku PDF→PNG teisendamise test 20-sekundilise üldpiiri (29,2 s). Ainult selle integratsioonitesti piir tõsteti 60 sekundile; PNG sisu kontrollid ja programmi tööpiirid jäid samaks. Kohalik kordus läbis kõik selle faili 12 testi.
 - 152 automaattesti 27 failis, TypeScript, ESLint ja tootmisversiooni ehitus läbisid kontrolli. Vitest uuendati versioonile 4.1.12; tootmissõltuvuste audit: 0. Kogu sõltuvuste auditi reegel läbis kontrolli varasema dokumenteeritud `braces` erandiga.
 - Kolm uut brauseritesti kontrollisid tänase ja möödunud tähtpäeva punast märgistust ainult eksportimata READY-arvetel, muutumatuid kogusummasid, tulevaste/eksporditud/kontrollimata arvete välistamist, ingliskeelseid silte ja Eesti südaöö järel värskendumist ilma serveripäringu või maksevaliku lähtestamiseta.
 - Kujundus vaadati kuvatõmmistelt üle 1440, 780 ja 390 px laiustel. Töölaua üleslaadimisala kõrgus on 132 px ning kokkuvõtteriba alla 95 px; kitsastes vaadetes ei teki lehe horisontaalset ülevoolu.
