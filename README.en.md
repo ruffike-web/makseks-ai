@@ -77,4 +77,10 @@ Workflow tests use separate test data. `desktop:pack` builds all three Windows p
 - [Release validation history](docs/WINDOWS_VALIDATION.md)
 - [Bank schemas and import verification](docs/bank-specs/README.md)
 
-The repository is initially private. No public distribution or open-source license has been designated.
+## License
+
+Makseks AI is free and open-source software distributed under the MIT License. The software may also be used for commercial purposes.
+
+The software is provided "as is", without any warranty. Users are responsible for verifying all payment details before importing payment files into their online banking system.
+
+The full license terms can be found in the [LICENSE](LICENSE) file.
