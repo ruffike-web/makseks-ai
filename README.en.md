@@ -9,6 +9,7 @@ Makseks AI is a Windows application for reviewing purchase invoices and preparin
 - Local reading of text PDFs without AI, an API key or internet access. The reader considers page layout; local OCR for scans and photos is not included.
 - Optional AI reading with Google Gemini, OpenAI, Anthropic Claude, Groq and Mistral Document AI. Select the provider, model and API key in Settings.
 - Manual entry, comparison with the original document, field provenance and human approval before export.
+- Red highlights for unexported ready invoices due today or overdue, with a more compact summary and upload area.
 - Separate invoices, suppliers, banking settings and export history for multiple companies.
 - Editable supplier records: saved names, registration codes, addresses and an unambiguous account populate later invoices.
 - Validation of IBANs, references, amounts and dates, plus duplicate and changed-account checks.
@@ -17,13 +18,13 @@ Makseks AI is a Windows application for reviewing purchase invoices and preparin
 
 ## Windows downloads
 
-Version **0.7.3** is available from this private repository's [Releases](https://github.com/ruffike-web/makseks-ai/releases) page. Repository access is required.
+Version **0.7.4** is available from this private repository's [Releases](https://github.com/ruffike-web/makseks-ai/releases) page. Repository access is required.
 
 | Package | Use |
 | --- | --- |
-| `Makseks-AI-0.7.3-portable-kiire.zip` | Recommended portable version. Extract the whole ZIP once and run `Makseks AI.exe`. |
-| `Makseks-AI-0.7.3-setup.exe` | Installer; launch the application from the Start menu. |
-| `Makseks-AI-0.7.3-portable.exe` | Single file that extracts itself on every launch; starts more slowly. |
+| `Makseks-AI-0.7.4-portable-kiire.zip` | Recommended portable version. Extract the whole ZIP once and run `Makseks AI.exe`. |
+| `Makseks-AI-0.7.4-setup.exe` | Installer; launch the application from the Start menu. |
+| `Makseks-AI-0.7.4-portable.exe` | Single file that extracts itself on every launch; starts more slowly. |
 
 Packages target Windows x64 and include their own runtime. No separate Node.js installation or terminal is needed. Executables are unsigned, so Windows may ask for confirmation. Release checksums are provided in `SHA256SUMS.txt`.
 
@@ -67,6 +68,7 @@ npm.cmd audit --omit=dev
 npm.cmd run desktop:pack
 npm.cmd run desktop:portable-smoke -- --fast
 npm.cmd run desktop:local-smoke
+npm.cmd run desktop:due-smoke
 ```
 
 Workflow tests use separate test data. `desktop:pack` builds all three Windows packages and audits them for private files. Use a separate output directory when an old executable locks a build folder; see the Windows guide. To add a bank profile, see [ADDING_A_BANK.md](docs/ADDING_A_BANK.md).

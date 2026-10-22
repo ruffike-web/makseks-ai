@@ -1,5 +1,13 @@
 # Koodi- ja turvaülevaatus / Code and security review
 
+## 0.7.4 järelkontroll / Follow-up — 22.10.2026
+
+Uus sõltuvuste audit leidis Vitesti testitööriista kaks teadet. Vitest ja selle `@vitest/mocker` alamteek uuendati parandatud versioonile 4.1.12; muudatus puudutab ainult arendussõltuvusi. Tootmissõltuvuste audit on endiselt 0. Täisauditis jääb varasem dokumenteeritud `braces` ahela erand (5 kõrget hoiatust); auditi reeglit ei leevendatud.
+
+The release audit detected two new Vitest advisories. Vitest and `@vitest/mocker` were updated to patched 4.1.12, affecting development dependencies only. The production audit remains at zero. The existing documented `braces` exception remains (5 high warnings); the audit policy was not relaxed. See the upstream advisories for [manual mock code injection](https://github.com/vitest-dev/vitest/security/advisories/GHSA-qxg6-89mg-rqv8) and [Windows redirect path traversal](https://github.com/vitest-dev/vitest/security/advisories/GHSA-xp26-3454-mjgp).
+
+## Varasem ülevaatus / Previous review
+
 15.10.2026 · Makseks AI 0.7.3
 
 ## Eesti

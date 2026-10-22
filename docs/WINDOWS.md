@@ -4,9 +4,9 @@
 
 ## Käivitamine
 
-- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.7.3-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
-- **Paigaldatav:** käivita `release/Makseks-AI-0.7.3-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
-- **Ühe EXE portable:** `release/Makseks-AI-0.7.3-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
+- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.7.4-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
+- **Paigaldatav:** käivita `release/Makseks-AI-0.7.4-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
+- **Ühe EXE portable:** `release/Makseks-AI-0.7.4-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
 
 Paketid on Windows x64 jaoks. Node.js, kohalik server ja pangaskeemid on kaasas. Käsitsi sisestamine, kontroll ja maksefailide loomine töötavad internetita; AI vajab internetti. Programm ei algata makseid. EXE on allkirjastamata: Windows SmartScreen võib kuvada tundmatu avaldaja teate.
 
@@ -38,6 +38,14 @@ Kui arve nimi ja konto viitavad eri salvestatud tarnijatele, tuleb vastuolu enne
 Tarnija üheselt kattuva konto, registrikoodi või nime puhul kasutatakse aktiivse ettevõtte tarnijaregistris salvestatud andmeid: nime, registrikoodi, aadressivälju ning sobiva konto BIC-i. Puuduv IBAN täidetakse, kui tarnijal on üks salvestatud konto. Mitme salvestatud konto korral kuvatakse kontovalikud; arvelt juba loetud erinev IBAN jääb kontrollimiseks alles. Juba imporditud arvele saab andmed lisada nupuga **Kasuta salvestatud tarnijaandmeid**. Mitmetähenduslikud väärtused jäävad tühjaks. Programm ei arvuta tasutud osa maha ega vali ise mitme konto vahel. Kõik leitud makseandmed tuleb üle kontrollida ja arve kinnitada.
 
 Pildid ja skannitud PDF-id vajavad käsitsi sisestamist või AI-lugemist; kohalik OCR ei kuulu sellesse versiooni. Ka keerulise paigutuse või tundmatute väljade nimetustega tekstiga PDF võib vajada käsitsi täitmist. Kohalik lugeja töötleb kuni 20-leheküljelisi, kuni 100 000 tekstimärgiga PDF-e; suurema dokumendi puhul jääb käsitsi kontroll alles. Ainult võrdluseks faili importimiseks vali **Käsitsi sisestamine**. AI kasutamiseks vali impordivaates **AI lugemine**; selleks peavad seadetes olema võti ja aktiivse ettevõtte nõusolek.
+
+## Valmis arvete maksetähtpäev
+
+Kinnitatud, veel eksportimata **Valmis** arve rida muutub helepunaseks, kui arve maksetähtpäev on täna või möödas. Staatus ja tähtpäev on punased ning rea juurde ilmub **Tähtaeg täna** või **Tähtaeg möödas**. Võrdluseks kasutatakse arve maksetähtpäeva, mitte makse kuupäeva, ning Eesti kuupäeva (`Europe/Tallinn`). Märgistus uueneb avatud programmis iga 30 sekundi järel ja aknasse naasmisel.
+
+Kui vähemalt ühe valmis arve tähtaeg on käes, muutuvad punaseks ka **Valmis makseid** ja **Valmis maksete summa**. Need näitavad endiselt kõigi valmis arvete arvu ja kogusummat. Märgistus ei muuda arve kinnitust, makse kuupäeva ega ekspordivalikut. Tulevase tähtpäevaga, kontrollimata või eksporditud arved seda märgistust ei saa. **Eksporditud** tähendab, et maksefail on loodud; see ei kinnita pangas tasumist.
+
+Üleslaadimisala ja arvete kokkuvõte on kompaktsemad. Failide lohistamine, failivalik ja kokkuvõtte näitajad toimivad endiselt samamoodi.
 
 ## AI-võti ja mudel
 

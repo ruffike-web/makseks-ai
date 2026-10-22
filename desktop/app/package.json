@@ -1,6 +1,6 @@
 {
   "name": "arve-makseks-desktop",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "Arvete kontroll ja pankade maksefailid",
   "author": "Makseks AI",
   "main": "main.cjs",

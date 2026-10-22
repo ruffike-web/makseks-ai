@@ -22,12 +22,14 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import {
+  estoniaToday,
   formatCents,
   parseCents,
   statusLabels,
   type Settings,
   type Status,
 } from "@/lib/domain";
+import { invoiceDueAttention } from "@/lib/invoice-attention";
 import type { AppState, InvoiceView } from "@/lib/service";
 import type { XmlValidation } from "@/lib/banks";
 import { api as requestApi, euro } from "./api";
@@ -130,7 +132,9 @@ export function CompanyWorkspace({
     [selected, setSelected] = useState<string[]>([]),
     [dragging, setDragging] = useState(false),
     [progress, setProgress] = useState(""),
-    [readingMode, setReadingMode] = useState<"local" | "manual" | "ai">("local"),
+    [readingMode, setReadingMode] = useState<"local" | "manual" | "ai">(
+      "local",
+    ),
     [download, setDownload] = useState<{
       url: string;
       filename: string;
@@ -139,6 +143,19 @@ export function CompanyWorkspace({
   const previews = useRef<Record<string, Preview>>({}),
     fileInput = useRef<HTMLInputElement>(null),
     downloadRef = useRef<string | null>(null);
+  const [today, setToday] = useState(() => estoniaToday());
+  useEffect(() => {
+    // Update only the visual reminder; keep approval and selection untouched.
+    const updateToday = () => setToday(estoniaToday());
+    const timer = window.setInterval(updateToday, 30_000);
+    window.addEventListener("focus", updateToday);
+    document.addEventListener("visibilitychange", updateToday);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", updateToday);
+      document.removeEventListener("visibilitychange", updateToday);
+    };
+  }, []);
   const refresh = useCallback(async () => {
     const next = await api<AppState>("state");
     setState(next);
@@ -276,6 +293,12 @@ export function CompanyWorkspace({
       items.reduce((sum, i) => sum + (parseCents(i.data.amountDue) ?? 0n), 0n),
     );
   const selectedItems = ready.filter((i) => selected.includes(i.id));
+  const dueReady = ready.filter((i) => invoiceDueAttention(i, today));
+  const dueSummary = dueReady.length
+    ? t("Maksetähtpäev on käes {count} eksportimata valmis arvel.", {
+        count: dueReady.length,
+      })
+    : undefined;
   const stats = state
     ? [
         { label: "Arveid kokku", value: String(state.invoices.length) },
@@ -328,81 +351,98 @@ export function CompanyWorkspace({
             </tr>
           </thead>
           <tbody>
-            {items.map((i) => (
-              <tr key={i.id}>
-                {selectable && (
+            {items.map((i) => {
+              const attention = invoiceDueAttention(i, today);
+              return (
+                <tr
+                  key={i.id}
+                  className={attention ? "invoice-due" : undefined}
+                >
+                  {selectable && (
+                    <td>
+                      <input
+                        type="checkbox"
+                        aria-label={t("Vali arve {number}", {
+                          number: i.data.invoiceNumber ?? "",
+                        })}
+                        checked={selected.includes(i.id)}
+                        onChange={(e) =>
+                          setSelected(
+                            e.target.checked
+                              ? [...selected, i.id]
+                              : selected.filter((id) => id !== i.id),
+                          )
+                        }
+                      />
+                    </td>
+                  )}
                   <td>
-                    <input
-                      type="checkbox"
-                      aria-label={t("Vali arve {number}", {
-                        number: i.data.invoiceNumber ?? "",
-                      })}
-                      checked={selected.includes(i.id)}
-                      onChange={(e) =>
-                        setSelected(
-                          e.target.checked
-                            ? [...selected, i.id]
-                            : selected.filter((id) => id !== i.id),
-                        )
-                      }
-                    />
-                  </td>
-                )}
-                <td>
-                  <button
-                    className="table-name"
-                    onClick={() => setEditing(i.id)}
-                  >
-                    {i.data.supplierName || t("Tarnija määramata")}
-                  </button>
-                  <small>
-                    {i.data.invoiceNumber || i.sourceFileName}
-                    {i.exportedAt ? t(" · varem eksporditud") : ""}
-                  </small>
-                </td>
-                <td>
-                  <Badge status={i.status} />
-                </td>
-                <td>{i.data.dueDate || "—"}</td>
-                <td>{i.executionDate || "—"}</td>
-                <td className="align-right amount">
-                  {i.data.amountDue ? euro(i.data.amountDue) : "—"}
-                </td>
-                <td>
-                  <div className="row-actions">
                     <button
-                      className="text-button"
+                      className="table-name"
                       onClick={() => setEditing(i.id)}
                     >
-                      {t("Kontrolli")} <IconArrowRight size={15} />
+                      {i.data.supplierName || t("Tarnija määramata")}
                     </button>
-                    <button
-                      className="icon-button muted"
-                      aria-label={t("Kustuta arve {number}", {
-                        number: i.data.invoiceNumber || i.sourceFileName,
-                      })}
-                      disabled={busy}
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            t("Kustutan selle arve kohalikust registrist?"),
+                    <small>
+                      {i.data.invoiceNumber || i.sourceFileName}
+                      {i.exportedAt ? t(" · varem eksporditud") : ""}
+                    </small>
+                  </td>
+                  <td>
+                    <Badge status={i.status} />
+                    {attention && (
+                      <small className="due-note">
+                        {t(
+                          attention === "today"
+                            ? "Tähtaeg täna"
+                            : "Tähtaeg möödas",
+                        )}
+                      </small>
+                    )}
+                  </td>
+                  <td className={attention ? "due-date" : undefined}>
+                    {i.data.dueDate || "—"}
+                  </td>
+                  <td>{i.executionDate || "—"}</td>
+                  <td className="align-right amount">
+                    {i.data.amountDue ? euro(i.data.amountDue) : "—"}
+                  </td>
+                  <td>
+                    <div className="row-actions">
+                      <button
+                        className="text-button"
+                        onClick={() => setEditing(i.id)}
+                      >
+                        {t("Kontrolli")} <IconArrowRight size={15} />
+                      </button>
+                      <button
+                        className="icon-button muted"
+                        aria-label={t("Kustuta arve {number}", {
+                          number: i.data.invoiceNumber || i.sourceFileName,
+                        })}
+                        disabled={busy}
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              t("Kustutan selle arve kohalikust registrist?"),
+                            )
                           )
-                        )
-                          void perform(async () => {
-                            await api(`invoices/${i.id}`, "DELETE");
-                            if (previews.current[i.id]) {
-                              URL.revokeObjectURL(previews.current[i.id].url);
-                              delete previews.current[i.id];
-                            }
-                          });
-                      }}
-                    >
-                      <IconTrash size={16} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                            void perform(async () => {
+                              await api(`invoices/${i.id}`, "DELETE");
+                              if (previews.current[i.id]) {
+                                URL.revokeObjectURL(previews.current[i.id].url);
+                                delete previews.current[i.id];
+                              }
+                            });
+                        }}
+                      >
+                        <IconTrash size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -564,14 +604,26 @@ export function CompanyWorkspace({
               {(view === "import" || view === "review") && (
                 <div className="stats">
                   {stats.map((s, index) => (
-                    <div key={s.label}>
+                    <div
+                      key={s.label}
+                      className={
+                        index === 1 && dueSummary ? "due-stat" : undefined
+                      }
+                      title={index === 1 ? dueSummary : undefined}
+                    >
                       <span>{t(s.label)}</span>
                       <strong className={index === 1 ? "green" : ""}>
                         {s.value}
                       </strong>
+                      {index === 1 && dueSummary && (
+                        <span className="sr-only">{dueSummary}</span>
+                      )}
                     </div>
                   ))}
-                  <div className="total-stat">
+                  <div
+                    className={`total-stat${dueSummary ? " due-stat" : ""}`}
+                    title={dueSummary}
+                  >
                     <span>{t("Valmis maksete summa")}</span>
                     <strong>{euro(total(ready))}</strong>
                   </div>
@@ -587,13 +639,43 @@ export function CompanyWorkspace({
                       </div>
                       <label className="field">
                         <span>{t("Andmete lugemine")}</span>
-                        <select value={readingMode} disabled={busy} onChange={(event) => setReadingMode(event.target.value as "local" | "manual" | "ai")}>
-                          <option value="local">{t("Kohalik lugemine — ilma AI-teenuseta")}</option>
-                          <option value="ai" disabled={!state.aiConfigured || !state.settings.aiEnabled || state.settings.aiConsentProvider !== state.aiProvider}>{t("AI lugemine")}</option>
-                          <option value="manual">{t("Käsitsi sisestamine")}</option>
+                        <select
+                          value={readingMode}
+                          disabled={busy}
+                          onChange={(event) =>
+                            setReadingMode(
+                              event.target.value as "local" | "manual" | "ai",
+                            )
+                          }
+                        >
+                          <option value="local">
+                            {t("Kohalik lugemine — ilma AI-teenuseta")}
+                          </option>
+                          <option
+                            value="ai"
+                            disabled={
+                              !state.aiConfigured ||
+                              !state.settings.aiEnabled ||
+                              state.settings.aiConsentProvider !==
+                                state.aiProvider
+                            }
+                          >
+                            {t("AI lugemine")}
+                          </option>
+                          <option value="manual">
+                            {t("Käsitsi sisestamine")}
+                          </option>
                         </select>
                       </label>
-                      <p className="help">{t(readingMode === "local" ? "Loeb tekstiga PDF-i selles arvutis. Võtit ega internetti pole vaja. Pildid ja skannid tuleb täita käsitsi; kontrolli alati leitud andmeid." : readingMode === "ai" ? "Arve saadetakse seadetes valitud AI-teenusele." : "Fail jääb võrdluseks; makseandmed sisestad ise.")}</p>
+                      <p className="help">
+                        {t(
+                          readingMode === "local"
+                            ? "Loeb tekstiga PDF-i selles arvutis. Võtit ega internetti pole vaja. Pildid ja skannid tuleb täita käsitsi; kontrolli alati leitud andmeid."
+                            : readingMode === "ai"
+                              ? "Arve saadetakse seadetes valitud AI-teenusele."
+                              : "Fail jääb võrdluseks; makseandmed sisestad ise.",
+                        )}
+                      </p>
                       <input
                         ref={fileInput}
                         className="sr-only"
@@ -626,14 +708,23 @@ export function CompanyWorkspace({
                             <IconCloudUpload size={32} stroke={1.5} />
                           )}
                         </div>
-                        <h3>
-                          {busy
-                            ? t("Töötlen arveid…")
-                            : t("Lohista arved siia")}
-                        </h3>
-                        <p>
-                          {busy ? progress : t("või vali failid oma arvutist")}
-                        </p>
+                        <div className="dropzone-copy">
+                          <h3>
+                            {busy
+                              ? t("Töötlen arveid…")
+                              : t("Lohista arved siia")}
+                          </h3>
+                          <p>
+                            {busy
+                              ? progress
+                              : t("või vali failid oma arvutist")}
+                          </p>
+                          <small>
+                            {t(
+                              "PDF, JPG või PNG · vaikimisi kuni 10 MB / fail",
+                            )}
+                          </small>
+                        </div>
                         <button
                           className="button primary"
                           disabled={busy}
@@ -642,9 +733,6 @@ export function CompanyWorkspace({
                           <IconPlus size={17} />
                           {t("Vali arvefailid")}
                         </button>
-                        <small>
-                          {t("PDF, JPG või PNG · vaikimisi kuni 10 MB / fail")}
-                        </small>
                       </div>
                       <div className="upload-footer">
                         <span>{t("Arve pole failina?")}</span>
@@ -705,7 +793,9 @@ export function CompanyWorkspace({
                     <div className="inline-note">
                       <IconFileInvoice size={20} />
                       <p>
-                        {t("Kohalik lugemine on kasutusvalmis. AI lugemise saad lubada seadetes.")}
+                        {t(
+                          "Kohalik lugemine on kasutusvalmis. AI lugemise saad lubada seadetes.",
+                        )}
                       </p>
                       <button
                         className="text-button"

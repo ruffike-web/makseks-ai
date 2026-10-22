@@ -9,6 +9,7 @@ Makseks AI on Windowsi rakendus ostuarvete kontrollimiseks ja pankade maksefaili
 - PDF-i kohalik lugemine ilma AI, API-võtme ja internetita. Lugeja arvestab teksti paigutust; piltide ja skannide kohalikku OCR-i pole.
 - Valikuline AI-lugemine: Google Gemini, OpenAI, Anthropic Claude, Groq ja Mistral Document AI. Teenusepakkuja, mudel ja API-võti valitakse seadetes.
 - Käsitsi sisestamine, algdokumendi võrdlus, andmete päritolu ning inimese kinnitus enne eksporti.
+- Eksportimata valmis arved märgitakse punaseks, kui nende maksetähtpäev on täna või möödas. Kokkuvõte ja üleslaadimisala võtavad vähem ruumi.
 - Mitme ettevõtte eraldi arved, tarnijad, pangaseaded ja ekspordiajalugu.
 - Muudetav tarnijaregister: salvestatud nimi, registrikood, aadress ja üheselt sobiv konto täidavad järgmiste arvete väljad.
 - IBAN-i, viitenumbri, summa, kuupäevade, võimalike duplikaatide ja muutunud kontode kontroll.
@@ -17,13 +18,13 @@ Makseks AI on Windowsi rakendus ostuarvete kontrollimiseks ja pankade maksefaili
 
 ## Windowsi programmi kasutamine
 
-Versiooni **0.7.3** failid asuvad selle privaatse repositooriumi [Releases](https://github.com/ruffike-web/makseks-ai/releases) lehel. Ligipääs eeldab repositooriumi õigusi.
+Versiooni **0.7.4** failid asuvad selle privaatse repositooriumi [Releases](https://github.com/ruffike-web/makseks-ai/releases) lehel. Ligipääs eeldab repositooriumi õigusi.
 
 | Pakett | Kasutus |
 | --- | --- |
-| `Makseks-AI-0.7.3-portable-kiire.zip` | Soovitatav portable. Paki kogu ZIP üks kord lahti ja käivita `Makseks AI.exe`. |
-| `Makseks-AI-0.7.3-setup.exe` | Paigaldusviisard ja käivitamine Start-menüüst. |
-| `Makseks-AI-0.7.3-portable.exe` | Üks fail, mis pakib sisu igal käivitusel ajutisse kausta; avaneb aeglasemalt. |
+| `Makseks-AI-0.7.4-portable-kiire.zip` | Soovitatav portable. Paki kogu ZIP üks kord lahti ja käivita `Makseks AI.exe`. |
+| `Makseks-AI-0.7.4-setup.exe` | Paigaldusviisard ja käivitamine Start-menüüst. |
+| `Makseks-AI-0.7.4-portable.exe` | Üks fail, mis pakib sisu igal käivitusel ajutisse kausta; avaneb aeglasemalt. |
 
 Paketid on Windows x64 jaoks. Node.js-i või terminali eraldi vaja ei ole. EXE-d on allkirjastamata ja Windows võib küsida käivituse kinnitust. Kontrollsummad on väljalaske failis `SHA256SUMS.txt`.
 
@@ -67,6 +68,7 @@ npm.cmd audit --omit=dev
 npm.cmd run desktop:pack
 npm.cmd run desktop:portable-smoke -- --fast
 npm.cmd run desktop:local-smoke
+npm.cmd run desktop:due-smoke
 ```
 
 Töövootestid kasutavad eraldi testandmeid. `desktop:pack` koostab kolm Windowsi paketti ja kontrollib privaatsete failide puudumist. Kui vana EXE hoiab ehituskausta lukus, kasuta eraldi väljundkausta; juhised on Windowsi juhendis. Uue pangaprofiili lisamine: [ADDING_A_BANK.md](docs/ADDING_A_BANK.md).

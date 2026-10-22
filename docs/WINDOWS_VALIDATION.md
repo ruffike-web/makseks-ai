@@ -1,5 +1,16 @@
 # Makseks AI 0.3.0 – Windowsi kontroll
 
+## 0.7.4 kontroll – 22.10.2026
+
+- 152 automaattesti 27 failis, TypeScript, ESLint ja tootmisversiooni ehitus läbisid kontrolli. Vitest uuendati versioonile 4.1.12; tootmissõltuvuste audit: 0. Kogu sõltuvuste auditi reegel läbis kontrolli varasema dokumenteeritud `braces` erandiga.
+- Kolm uut brauseritesti kontrollisid tänase ja möödunud tähtpäeva punast märgistust ainult eksportimata READY-arvetel, muutumatuid kogusummasid, tulevaste/eksporditud/kontrollimata arvete välistamist, ingliskeelseid silte ja Eesti südaöö järel värskendumist ilma serveripäringu või maksevaliku lähtestamiseta.
+- Kujundus vaadati kuvatõmmistelt üle 1440, 780 ja 390 px laiustel. Töölaua üleslaadimisala kõrgus on 132 px ning kokkuvõtteriba alla 95 px; kitsastes vaadetes ei teki lehe horisontaalset ülevoolu.
+- Uues Windowsi programmis läbis `desktop:due-smoke` tegelike sünteetiliste arvete loomise ja kinnitamise, eesti/inglise tähtpäevateated ning punase märgistuse eemaldumise pärast tegelikku XML-eksporti. Hilisema maksekuupäevaga arve märgistus lähtub endiselt arve tähtpäevast.
+- Lõplik kiire portable-ZIP pakiti projekti välisesse ajutisse kausta: iseseisev käivitumine, andmekausta loomine, mudelivalikud, kõigi nelja panga XSD-eksport, PDF-tekst ja PDF→PNG teisendus läbisid kontrolli.
+- Väljalaske privaatsusaudit kontrollis 2346 ressursifaili; lähtekoodi audit 146 faili. Testid kasutasid eraldi sünteetilisi andmeid. Kasutaja andmekausta ei muudetud; tasulisi AI-päringuid, päris pangaimpordi katseid ega paigaldusviisardi läbimist ei tehtud.
+
+English: 0.7.4 passed 152 unit/integration tests, three new browser tests, typecheck, lint, production build, and real Windows approval/export tests for due reminders in both languages. Screenshots at desktop and narrow widths were inspected. The final portable ZIP passed independent startup, four-bank schema export and PDF checks. Privacy audits passed. Vitest was patched to 4.1.12; production audit remains zero. Real user data, paid AI calls, bank imports and the installer wizard were not used.
+
 ## 0.7.3 kontroll – 15.10.2026
 
 - 137 automaattesti 26 failis, TypeScript, ESLint ja tootmisversiooni ehitus läbisid kontrolli.

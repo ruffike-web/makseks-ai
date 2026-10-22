@@ -6,9 +6,9 @@
 
 Download a package from the private repository's Releases page:
 
-- **Fast portable (recommended):** extract all of `Makseks-AI-0.7.3-portable-kiire.zip`, then run `Makseks AI.exe`. Keep the entire folder together, including the `Makseks-AI.portable` marker. Do not launch the executable inside the ZIP viewer.
-- **Installer:** run `Makseks-AI-0.7.3-setup.exe`, choose an installation directory and launch the application from the Start menu.
-- **Single-file portable:** `Makseks-AI-0.7.3-portable.exe` extracts the application to a temporary directory on each launch and therefore starts more slowly.
+- **Fast portable (recommended):** extract all of `Makseks-AI-0.7.4-portable-kiire.zip`, then run `Makseks AI.exe`. Keep the entire folder together, including the `Makseks-AI.portable` marker. Do not launch the executable inside the ZIP viewer.
+- **Installer:** run `Makseks-AI-0.7.4-setup.exe`, choose an installation directory and launch the application from the Start menu.
+- **Single-file portable:** `Makseks-AI-0.7.4-portable.exe` extracts the application to a temporary directory on each launch and therefore starts more slowly.
 
 Windows x64 is required. The runtime and bank schemas are included. The executable is unsigned, so Windows SmartScreen may show an unknown-publisher notice.
 
@@ -45,6 +45,14 @@ A unique saved supplier match by registration code, account or exact normalized 
 Edit saved records in **Suppliers**. On an existing invoice, **Use saved supplier details** applies the saved details without reimporting the PDF. Saving supplier changes invalidates affected approvals where necessary. Invoice numbers, amounts and dates always belong to the invoice, not the supplier record.
 
 Field annotations identify values supplied by the document, supplier record or user. Original extracted values remain available for comparison. Selecting an account or saving edits does not approve an invoice. Review possible duplicates and changed accounts deliberately, then confirm the invoice. Approval is invalidated when relevant invoice or payment settings change.
+
+## Due dates of ready invoices
+
+An approved, unexported **Ready** invoice gets a pale red row when its invoice due date is today or earlier. Its status and due date turn red, with a **Due today** or **Overdue** note. This uses the invoice due date, not the payment execution date, and the current date in Estonia (`Europe/Tallinn`). The highlight refreshes every 30 seconds while the application is open and when you return to its window.
+
+If any ready invoice is due, **Ready payments** and **Ready payments total** also turn red. These figures still include all ready invoices. Highlighting does not change approval, payment dates or the export selection. Future-due, unreviewed and exported invoices do not receive the highlight. **Exported** means a payment file was created; it does not confirm payment at the bank.
+
+The upload area and invoice summary take less space. Drag and drop, the file picker and summary figures work as before.
 
 ## Create bank payment files
 
@@ -98,10 +106,10 @@ Use Node.js 24 on Windows. See the overview for dependency installation and data
 For a fresh output folder when an old running executable locks the default one:
 
 ```powershell
-$env:ARVE_RELEASE_DIR='release/build-0.7.3'
+$env:ARVE_RELEASE_DIR='release/build-0.7.4'
 npm.cmd run build
 npm.cmd run desktop:stage
-npx.cmd electron-builder --config desktop/builder.cjs --config.directories.output=release/build-0.7.3 --win --x64 --publish never
+npx.cmd electron-builder --config desktop/builder.cjs --config.directories.output=release/build-0.7.4 --win --x64 --publish never
 node desktop/audit.mjs
 node desktop/fast-portable.mjs
 ```
