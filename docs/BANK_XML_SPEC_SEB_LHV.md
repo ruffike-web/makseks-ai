@@ -1,5 +1,13 @@
 # SEB + LHV pain.001.001.09 implementation spec
 
+## Documentation status update — 2026-10-22
+
+The user has confirmed successful real internet-bank imports of SEB and LHV `pain.001.001.09` XML payment files. Actual Coop Pank and Swedbank imports remain unverified. This is a user report, not official bank certification or proof that every acceptance-test scenario below has been exercised. See the [current import status and scope](bank-specs/README.md#praegune-impordistaatus).
+
+LHV's official supplementary XSD was integrated on 2026-10-07; see the [LHV profile](bank-specs/lhv/README.md). The original implementation baseline below, including its then-incomplete golden-file validation record and acceptance checklist, is preserved unchanged as historical source material. Its missing-schema and untested-import statements describe that earlier state, not the current implementation.
+
+## Original implementation baseline
+
 Status: implementation baseline for the invoice-to-bank-import MVP.
 
 ## Source material used

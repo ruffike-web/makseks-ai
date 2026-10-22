@@ -8,4 +8,4 @@ MVP: EUR, TRF, `BtchBookg=false`, grupi `SvcLvl/Prtry=SEPA`, `ChrgBr=SHAR`, IBAN
 
 Puuduliku skeemi hoiatus ja eraldi nõusolek eemaldati. Väliseid XML-olemeid ega DTD-sid ei lubata; imporditakse ainult kaasasolev ametlik lisaskeem.
 
-Päris LHV internetipanga import: tegemata. Impordikatse juhend: `../README.md`.
+Päris LHV internetipanga import: kasutaja kinnitas `pain.001.001.09` XML-maksefaili eduka impordi. Dokumentatsioonimärge lisatud 22.10.2026; see ei tähenda ametlikku pangapoolset sertifitseerimist ega kõigi maksejuhtumite katsetamist. [Praegune staatus ja kinnituse ulatus](../README.md#praegune-impordistaatus) · [impordikatse juhend](../README.md#lhv).

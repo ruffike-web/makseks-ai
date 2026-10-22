@@ -1,5 +1,11 @@
 # Rakenduse kontrolliraport
 
+## Hilisem dokumentatsioonimärge — 22.10.2026
+
+Kasutaja on kinnitanud nii SEB kui ka LHV `pain.001.001.09` XML-maksefailide eduka impordi internetipanka. Coop Panga ja Swedbanki tegelik import on endiselt kontrollimata. Kinnitus ei ole ametlik pangapoolne sertifitseerimine; [kinnituse ulatus ja praegune staatus](bank-specs/README.md#praegune-impordistaatus) on eraldi dokumenteeritud. Allolevad 07.10.2026 tulemused, sealhulgas tollased tegemata impordikatsete märkused, on säilitatud muutmata. Uus märge ei lisa ajaloolistele testidele tagantjärele tulemusi.
+
+## Ajalooline kontrolliraport — 07.10.2026
+
 Kuupäev: 2026-10-07. Kontrollitud kohalikus Windowsi keskkonnas.
 
 ## Viimane täiendus: mitu ettevõtet

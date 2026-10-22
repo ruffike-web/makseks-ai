@@ -4,7 +4,7 @@
 
 ## Start and update
 
-Download a package from the private repository's Releases page:
+Download a package from the public [Releases page](https://github.com/ruffike-web/makseks-ai/releases):
 
 - **Fast portable (recommended):** extract all of `Makseks-AI-0.7.4-portable-kiire.zip`, then run `Makseks AI.exe`. Keep the entire folder together, including the `Makseks-AI.portable` marker. Do not launch the executable inside the ZIP viewer.
 - **Installer:** run `Makseks-AI-0.7.4-setup.exe`, choose an installation directory and launch the application from the Start menu.
@@ -60,7 +60,7 @@ Select approved invoices under ready invoices and export for the active bank. Th
 
 Import the XML into the correct company's internet banking. Recheck recipient accounts, amounts, payment dates and references there. The application does not log into the bank or sign payments.
 
-Supported profiles are SEB, LHV, Coop Pank and Swedbank (formerly Hansapank). All four have local schema validation. SEB import has been confirmed by the user; actual LHV, Coop Pank and Swedbank bank acceptance is still unverified. Only supported EUR supplier payments are generated. Re-exporting an invoice requires explicit duplicate acknowledgement.
+Supported profiles are SEB, LHV, Coop Pank and Swedbank (formerly Hansapank). All four have local schema validation. The user has confirmed successful real internet-bank imports of `pain.001.001.09` XML payment files at both SEB and LHV. Actual Coop Pank and Swedbank imports remain unverified. This user confirmation is not official bank certification or a guarantee of acceptance for every payment scenario; review payment details in the bank as well. Only supported EUR supplier payments are generated. Re-exporting an invoice requires explicit duplicate acknowledgement. See the [import status and verification scope](bank-specs/README.md#praegune-impordistaatus).
 
 ## Configure AI
 

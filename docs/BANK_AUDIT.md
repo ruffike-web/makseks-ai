@@ -1,5 +1,11 @@
 # Materjalide kontroll — 06.10.2026
 
+## Hilisem dokumentatsioonimärge — 22.10.2026
+
+Allolev 06.10.2026 audit on säilitatud muutmata. LHV ametlik lisaskeem ühendati validaatoriga 07.10.2026, nagu kirjeldab [rakenduse kontrolliraport](IMPLEMENTATION_VALIDATION.md). Kasutaja on nüüd kinnitanud nii SEB kui ka LHV `pain.001.001.09` XML-maksefailide eduka impordi internetipanka; Coop Panga ja Swedbanki tegelik import on endiselt kontrollimata. See kasutajakinnitus ei ole ametlik pangapoolne sertifitseerimine. [Praegune impordistaatus ja kinnituse ulatus](bank-specs/README.md#praegune-impordistaatus).
+
+## Algse auditi tulemused — 06.10.2026
+
 Originaale ei muudetud. Topelt kleebitud prompti arvestatakse ühe korra. Ametlikud skeemid ja näited on ülimuslikud GPT loodud näidete suhtes.
 
 - Leitud SEB algne skeem ja kolm ametlikku näidet Downloads/XML_message_examples_and_XSD-s kaustast. Kõik kolm näidet ja SEB golden läbisid lxml 6.1.1 XSD valideerimise.

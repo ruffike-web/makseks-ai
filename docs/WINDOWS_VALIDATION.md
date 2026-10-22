@@ -1,5 +1,11 @@
 # Makseks AI 0.3.0 – Windowsi kontroll
 
+## Eraldi kasutajakinnitus — dokumentatsioonimärge 22.10.2026
+
+Kasutaja on kinnitanud nii SEB kui ka LHV `pain.001.001.09` XML-maksefailide eduka impordi internetipanka. Coop Panga ja Swedbanki tegelik import on endiselt kontrollimata. See ei ole ametlik pangapoolne sertifitseerimine ega osa allpool kirjeldatud sünteetiliste andmetega automaattestidest. [Praegune impordistaatus ja kinnituse ulatus](bank-specs/README.md#praegune-impordistaatus). Allolevad väljalaskeraportid ja nende piirangud, sealhulgas varasemad tegemata impordikatsete märkused, on säilitatud muutmata.
+
+English: the user has confirmed successful real SEB and LHV `pain.001.001.09` internet-bank imports. Actual Coop Pank and Swedbank imports remain unverified. This user report is separate from the historical automated release tests below and is not official bank certification. Historical results and limitations remain unchanged.
+
 ## 0.7.4 kontroll – 22.10.2026
 
 - GitHubi Windowsi keskkonnas ületas esimene tegeliku PDF→PNG teisendamise test 20-sekundilise üldpiiri (29,2 s). Ainult selle integratsioonitesti piir tõsteti 60 sekundile; PNG sisu kontrollid ja programmi tööpiirid jäid samaks. Kohalik kordus läbis kõik selle faili 12 testi.

@@ -55,7 +55,7 @@ Teenusepakkuja ja mudel on kõigil ettevõtetel ühised; iga teenuse võti säil
 
 ## Pangad
 
-Valikus on SEB, LHV, Coop Pank ja Swedbank (endine Hansapank). Kõigi maksefailidele tehakse kaasapandud skeemidega kohalik XSD kontroll. Kasutaja on kinnitanud SEB internetipanga importi; LHV, Coop Panga ja Swedbanki tegelik internetipanga import vajab veel kontrollimist. Rakendus toetab EUR tarnijamakseid.
+Valikus on SEB, LHV, Coop Pank ja Swedbank (endine Hansapank). Kõigi maksefailidele tehakse kaasapandud skeemidega kohalik XSD kontroll. Kasutaja on kinnitanud, et nii SEB kui ka LHV `pain.001.001.09` XML-maksefailide tegelik import internetipanka õnnestus. Coop Panga ja Swedbanki tegelik import on endiselt kontrollimata. See kasutajakinnitus ei ole ametlik pangapoolne sertifitseerimine ega taga iga võimaliku maksejuhtumi aktsepteerimist; kontrolli makseandmed ka pangas üle. Rakendus toetab EUR tarnijamakseid. Täpsem [impordistaatus ja kontrolli ulatus](bank-specs/README.md#praegune-impordistaatus).
 
 ## Andmed ja varundamine
 

@@ -6,4 +6,4 @@ MVP: EUR, TRF, `SvcLvl/Cd=SEPA`, IBAN, `BICFI`, arv/summa mõlemal tasemel, kuup
 
 Iga rakenduse genereeritud fail valideeritakse muutmata SEB XSD vastu libxml2-wasm abil. Algne golden ja ametlikud näited läbisid ka lxml kontrolli. Golden ärireeglite vead on kirjas `../../BANK_AUDIT.md`.
 
-Päris SEB internetipanga import: kasutaja kinnituse põhjal õnnestunud. Impordikatse juhend: `../README.md`.
+Päris SEB internetipanga import: kasutaja kinnitas `pain.001.001.09` XML-maksefaili eduka impordi. Dokumentatsioonimärge lisatud 22.10.2026; see ei tähenda ametlikku pangapoolset sertifitseerimist ega kõigi maksejuhtumite katsetamist. [Praegune staatus ja kinnituse ulatus](../README.md#praegune-impordistaatus) · [impordikatse juhend](../README.md#seb).

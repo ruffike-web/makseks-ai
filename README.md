@@ -44,7 +44,7 @@ Kohalik ja käsitsi lugemine ei saada arveid AI-teenusele. AI-lugemine saadab do
 
 Andmebaas ja API-seaded asuvad kasutaja andmekaustas. **Windowsi programmis on API-võtmed `ai-config.json` failis krüpteeritud Windowsi kasutajakontoga seotud kaitsega.** Varasemad võtmed teisendatakse esimesel käivitamisel automaatselt. Teise arvuti või kasutaja all tuleb võtmed uuesti sisestada. Eraldi arendusserveri (`npm run dev/start`) võtmefail on endiselt krüpteerimata. Ära jaga andmekausta ega paiguta aktiivset andmebaasi võrgukettale. See on ühe kohaliku kasutaja tööriist; ettevõtte valik ei ole kasutajakontode ligipääsukontroll. Väljalasked ja repositoorium ei sisalda päris arveid, andmebaase ega võtmeid.
 
-Kõik väljad vajavad inimese kontrolli. Sulgudes, vigased või ebaselged summad jäetakse käsitsi täitmiseks; mitme konto vahel automaatselt ei valita. Toetatud on EUR tarnijamaksed. XSD kontroll ei taga internetipanga aktsepteerimist: SEB import on kasutaja kinnitatud; LHV, Coop Panga ja Swedbanki tegelik import vajab veel kontrolli.
+Kõik väljad vajavad inimese kontrolli. Sulgudes, vigased või ebaselged summad jäetakse käsitsi täitmiseks; mitme konto vahel automaatselt ei valita. Toetatud on EUR tarnijamaksed. Kasutaja on kinnitanud, et nii SEB kui ka LHV `pain.001.001.09` XML-maksefailide tegelik import internetipanka õnnestus. Coop Panga ja Swedbanki tegelik import on endiselt kontrollimata. XSD kontroll ei taga iga faili aktsepteerimist ning kasutaja impordikinnitus ei tähenda ametlikku pangapoolset sertifitseerimist. Täpsem [impordistaatus ja kontrolli ulatus](docs/bank-specs/README.md#praegune-impordistaatus).
 
 ## Arendamine
 
@@ -71,7 +71,7 @@ npm.cmd run desktop:local-smoke
 npm.cmd run desktop:due-smoke
 ```
 
-Töövootestid kasutavad eraldi testandmeid. `desktop:pack` koostab kolm Windowsi paketti ja kontrollib privaatsete failide puudumist. Kui vana EXE hoiab ehituskausta lukus, kasuta eraldi väljundkausta; juhised on Windowsi juhendis. Uue pangaprofiili lisamine: [ADDING_A_BANK.md](docs/ADDING_A_BANK.md).
+Töövootestid kasutavad eraldi testandmeid. `desktop:pack` koostab kolm Windowsi paketti ja kontrollib privaatsete failide puudumist. Kui vana EXE hoiab ehituskausta lukus, kasuta eraldi väljundkausta; käsud on [ingliskeelse Windowsi juhendi arendajaosas](docs/WINDOWS.en.md#developer-checks-and-packaging). Uue pangaprofiili lisamine: [ADDING_A_BANK.md](docs/ADDING_A_BANK.md).
 
 - [Koodiülevaatus ja teadaolevad piirangud / Code review](docs/SECURITY_REVIEW.md)
 - [Väljalasete kontrollid](docs/WINDOWS_VALIDATION.md)

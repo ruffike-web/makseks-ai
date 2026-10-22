@@ -44,7 +44,7 @@ Local and manual reading do not send invoices to an AI service. AI reading sends
 
 The database and API settings are stored in the application data folder. **The Windows application encrypts API keys in `ai-config.json` using protection tied to the Windows user account.** Existing keys migrate automatically on first launch. Re-enter keys when moving to another computer or user account. The standalone development server (`npm run dev/start`) still stores keys without encryption. Do not share this folder or use an active database on a network drive. This is a single-user local application; choosing a company is not a user authorization boundary. Releases and source control do not include real invoices, databases or keys.
 
-All extracted fields require human review. Parenthesized, malformed or ambiguous amounts are left for manual entry; the application does not choose arbitrarily between multiple accounts. EUR supplier payments are supported. XSD validation does not guarantee bank acceptance: a user has confirmed SEB import; actual LHV, Coop Pank and Swedbank imports still require verification.
+All extracted fields require human review. Parenthesized, malformed or ambiguous amounts are left for manual entry; the application does not choose arbitrarily between multiple accounts. EUR supplier payments are supported. The user has confirmed successful real internet-bank imports of `pain.001.001.09` XML payment files at both SEB and LHV. Actual Coop Pank and Swedbank imports remain unverified. XSD validation does not guarantee acceptance of every file, and user-confirmed imports do not constitute official bank certification. See the [import status and verification scope](docs/bank-specs/README.md#praegune-impordistaatus).
 
 ## Development
 
