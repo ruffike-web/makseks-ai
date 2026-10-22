@@ -18,7 +18,7 @@ Makseks AI is a Windows application for reviewing purchase invoices and preparin
 
 ## Windows downloads
 
-Version **0.7.4** is available from this private repository's [Releases](https://github.com/ruffike-web/makseks-ai/releases) page. Repository access is required.
+Version **0.7.4** is publicly available from the [Releases](https://github.com/ruffike-web/makseks-ai/releases) page.
 
 | Package | Use |
 | --- | --- |

@@ -18,7 +18,7 @@ Makseks AI on Windowsi rakendus ostuarvete kontrollimiseks ja pankade maksefaili
 
 ## Windowsi programmi kasutamine
 
-Versiooni **0.7.4** failid asuvad selle privaatse repositooriumi [Releases](https://github.com/ruffike-web/makseks-ai/releases) lehel. Ligipääs eeldab repositooriumi õigusi.
+Versiooni **0.7.4** failid asuvad [Releases](https://github.com/ruffike-web/makseks-ai/releases) lehel ja on avalikult allalaaditavad.
 
 | Pakett | Kasutus |
 | --- | --- |
