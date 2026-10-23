@@ -1,5 +1,32 @@
 # Koodi- ja turvaülevaatus / Code and security review
 
+## Next.js-i turvauuendus / Next.js security update — 23.10.2026
+
+[GitHub Actionsi käivitus 39844573902](https://github.com/ruffike-web/makseks-ai/actions/runs/39844573902) ebaõnnestus sammus `npm audit --omit=dev`: lukustatud Next.js 16.3.8 kohta teatati kriitilisest leiust. Sama viga kordus kohalikus auditis. Kolm teadet puudutasid SVG piltide optimeerimist ([GHSA-2464-fhr4-w9xw](https://github.com/advisories/GHSA-2464-fhr4-w9xw)), Server Actionsi teenusetõkestust ([GHSA-p3m5-59mp-jv5r](https://github.com/advisories/GHSA-p3m5-59mp-jv5r)) ja tüübitud massiive tagastavaid `use cache` funktsioone ([GHSA-673q-mjm6-r5xr](https://github.com/advisories/GHSA-673q-mjm6-r5xr)). Auditi mõjutatud vahemik oli 16.0.0–16.4.0.
+
+`next` ja `eslint-config-next` uuendati **16.3.8 → 16.4.2**. Kontrollimise ajal oli 16.4.2 npm-i `latest` stabiilne väljalase; see sisaldab [16.4.1 turvaparandusi](https://github.com/vercel/next.js/releases/tag/v16.4.1) ja [16.4.2 järelparandusi](https://github.com/vercel/next.js/releases/tag/v16.4.2). Versioon nõuab Node.js-i vähemalt 20.9.0 ja toetab projekti React/React DOM 19.3.0; projekti Node.js-i alampiir jääb 22.12.0 ning CI kasutab Node 24.
+
+Lukustusfail uuendati npm 11.13.0 käsuga `npm install --save-exact next@16.4.2 eslint-config-next@16.4.2 --package-lock-only --ignore-scripts`, millele järgnes täielik `npm ci` koos tavapärase `postinstall` sammuga. `npm audit fix --force` ei kasutatud. Lukustusfailis muutusid ainult Next.js-i paketid: lisaks kahele otsesele sõltuvusele `@next/env`, `@next/eslint-plugin-next` ja kaheksa platvormi `@next/swc-*`. Reacti, Prisma, pangaprofiilide ega muude sõltuvuste versioone ei muudetud.
+
+Kohalikud kontrollid Windowsis, Node.js 24.16.0 ja npm 11.13.0:
+
+| Kontroll / Check | Tulemus / Result |
+| --- | --- |
+| `npm ci` | PASS — puhas paigaldus lukustusfailist / clean lockfile install |
+| `npm test` | PASS — 152 testi, 27 faili / 152 tests, 27 files |
+| `npm run typecheck` | PASS |
+| `npm run lint` | PASS |
+| `npm run build` | PASS — Next.js 16.4.2, Turbopack, standalone |
+| `npm audit --omit=dev` | PASS — 0 teadaolevat nõrkust / 0 known vulnerabilities |
+| `npm run audit:dependencies` | PASS — olemasolev poliitika muutmata / existing policy unchanged |
+| `node scripts/audit-source.mjs` | PASS — kontrollitud Git-indeks / checked Git index |
+
+Esimene kohalik `npm test` katse katkes piiratud käivituskeskkonnas ajutiste failide ümbernimetamise `EPERM` veaga enne testide käivitumist. Sama muutmata käsk läbis kõik testid tavapäraste Windowsi õigustega. Teste, ajapiiranguid ega turvapoliitikat ei muudetud. Täisauditis jääb varasem dokumenteeritud ainult arendussõltuvuste `braces` ahela erand (5 kõrget hoiatust); tootmissõltuvuste audit on 0. Töövoo turvakontrolle ei leevendatud.
+
+English: the failing CI audit was reproduced and fixed by updating only Next.js and its matching ESLint configuration from 16.3.8 to stable 16.4.2, with npm regenerating the lockfile. React 19.3.0 and the existing Node 24 CI remain compatible. All eight local checks above passed. The first sandboxed test attempt failed on temporary-file rename permissions before tests ran; the unchanged command passed with normal Windows permissions. The existing five development-only `braces` warnings remain covered by the unchanged audit policy; the production audit reports zero vulnerabilities.
+
+Muudatus hõlmab lähtekoodi sõltuvusi ja nende kontrolli; varem avaldatud Windowsi EXE/ZIP-pakette selles töös uuesti ei koostatud. / This change covers source dependencies and their verification; previously published Windows EXE/ZIP packages were not rebuilt. Varasemad kontrollitulemused allpool on säilitatud ajalooliste märkmetena. / Earlier results below are preserved as historical records.
+
 ## 0.7.4 järelkontroll / Follow-up — 22.10.2026
 
 Uus sõltuvuste audit leidis Vitesti testitööriista kaks teadet. Vitest ja selle `@vitest/mocker` alamteek uuendati parandatud versioonile 4.1.12; muudatus puudutab ainult arendussõltuvusi. Tootmissõltuvuste audit on endiselt 0. Täisauditis jääb varasem dokumenteeritud `braces` ahela erand (5 kõrget hoiatust); auditi reeglit ei leevendatud.
