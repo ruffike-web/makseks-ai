@@ -135,10 +135,13 @@ try {
         invoiceNumber: `PORTABLE-${bank}`,
         amountDue: "20.20",
         currency: "EUR",
-        dueDate: "2030-10-20",
+        invoiceDate: "2030-10-06",
+        paymentTermDays: "14",
+        dueDate: null,
       },
     });
     const item = (await api("state")).invoices.find((i) => i.id === row.id);
+    expect(item.data.dueDate).toBe("2030-10-20");
     await api(`invoices/${row.id}/approve`, "POST", {
       version: item.version,
       reviewContext: item.reviewContext,
@@ -147,6 +150,12 @@ try {
       accountChange: false,
       rememberSupplier: false,
     });
+    const approved = (await api("state")).invoices.find((i) => i.id === row.id);
+    await api(`invoices/${row.id}/archive`, "POST", { version: approved.version });
+    const archived = await api("state");
+    expect(archived.invoices.some((i) => i.id === row.id)).toBe(false);
+    expect(archived.archivedInvoices.find((i) => i.id === row.id).approvedAt).toBe(approved.approvedAt);
+    await api(`invoices/${row.id}/restore`, "POST", { version: approved.version });
     const result = await api("export", "POST", { ids: [row.id] });
     expect(result.validation.status).toBe("valid");
     expect(result.xml).toContain("pain.001.001.09");

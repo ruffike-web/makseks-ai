@@ -34,6 +34,9 @@ try {
     if (!response.ok) throw new Error("Cannot create synthetic invoice");
   });
   const before = await state(page);
+  await page.getByLabel("Kujundus", { exact: true }).first().selectOption("dark");
+  await expect(page.getByLabel("Kujundus", { exact: true }).first()).toBeEnabled();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.getByLabel("Ettevõtte nimi", { exact: true }).fill("Unsaved bilingual test OÜ");
   await page.getByLabel("Keel / Language", { exact: true }).selectOption("en");
   await expect(page.getByLabel("Company name", { exact: true })).toHaveValue("Unsaved bilingual test OÜ");
@@ -42,7 +45,7 @@ try {
   expect(before.invoices).toHaveLength(1);
   expect((await state(page)).invoices[0].reviewContext).toEqual(before.invoices[0].reviewContext);
   expect((await state(page)).settings).toEqual(before.settings);
-  expect(JSON.parse(await readFile(resolve(dataDir, "ui-preferences.json"), "utf8"))).toEqual({ language: "en" });
+  expect(JSON.parse(await readFile(resolve(dataDir, "ui-preferences.json"), "utf8"))).toEqual({ language: "en", theme: "dark" });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole("button", { name: "Invoice import", exact: true }).click();
   await page.getByRole("button", { name: "Add manually", exact: true }).first().click();
@@ -59,13 +62,14 @@ try {
   application = undefined;
   page = await launch();
   await expect(page.getByRole("button", { name: "Settings", exact: true })).toBeVisible({ timeout: 30000 });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect.poll(menuLabels).toContain("File");
   await page.getByRole("button", { name: "Settings", exact: true }).click();
   await page.getByLabel("Keel / Language", { exact: true }).selectOption("et");
   await expect(page.getByLabel("Ettevõtte nimi", { exact: true })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "et");
   await expect.poll(menuLabels).toContain("Fail");
-  console.log("Language smoke passed: live ET/EN switch, unsaved form preservation, payment settings unchanged, reload/restart persistence, native menus.");
+  console.log("Language/theme smoke passed: ET/EN switch, unsaved form preservation, unchanged payments, dark theme after restart, native menus.");
 } finally {
   if (application) await application.close();
 }

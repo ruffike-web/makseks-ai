@@ -1,5 +1,6 @@
 import { isValidIBAN } from "ibantools";
-import { blankInvoice, type InvoiceField, type Settings } from "./domain";
+import { blankInvoice, normalizeInvoice, type InvoiceField, type Settings } from "./domain";
+import { parsePaymentTermValue, paymentDateValue, paymentTermsLabel } from "./payment-terms";
 
 export type LocalPayer = Pick<Settings, "companyName" | "registrationCode" | "iban">;
 const identity = (value: string) => value.trim().replace(/\s+/g, " ").toLocaleLowerCase("et");
@@ -22,7 +23,7 @@ export function localAmount(value: string): string | null {
   return number.replace(",", ".") + (/[.,]/.test(number) ? "" : ".00");
 }
 
-/** Conservative labels only. No arithmetic, company-name fallback, OCR or network. */
+/** Conservative labels only; explicit calendar-day terms are calculated by the shared normalizer. */
 export function extractLocalInvoice(text: string, payer?: LocalPayer) {
   const result = blankInvoice();
   const candidates = new Map<InvoiceField, Set<string>>();
@@ -56,12 +57,16 @@ export function extractLocalInvoice(text: string, payer?: LocalPayer) {
       const bic = /^(?:BIC|SWIFT)\s*:?\s*([A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?)$/i.exec(line);
       if (bic) add("supplierBic", bic[1].toUpperCase());
     }
+    const termMatch = paymentTermsLabel.exec(line);
+    const termValue = termMatch ? line.slice(termMatch[0].length).trim() : "";
+    if (termMatch && termValue && !paymentDateValue.test(termValue))
+      add("paymentTermDays", parsePaymentTermValue(termValue, termMatch[0]));
     const rules: [InvoiceField, RegExp][] = [
       ["invoiceNumber", /^(?:arve\s*(?:nr\.?|number)?|invoice\s*(?:no\.?|number|#)?)\s*:?\s+([\w/.-]+)$/i],
       ["referenceNumber", /^(?:viitenumber|viitenr\.?|payment reference|reference number)\s*:?\s*(\d+|RF[\dA-Z ]+)$/i],
       ["customerNumber", /^(?:kliendinumber|kliendi nr\.?|customer (?:number|no\.?))\s*:?\s*([\w/.-]+)$/i],
       ["invoiceDate", /^(?:arve kuupäev|invoice date)\s*:?\s*(\S+)$/i],
-      ["dueDate", /^(?:maksetähtpäev|maksetähtaeg|tasumise tähtaeg|due date|payment due)\s*:?\s*(\S+)$/i],
+      ["dueDate", /^(?:maksetähtpäev|maksetähtaeg|tasumise tähtaeg|due date|payment due)\s*:?\s*(.+)$/i],
       ["amountDue", /^(?:tasuda|kokku tasuda|kuulub tasumisele|tasumisele kuuluv summa|amount due|balance due|total due)\s*:?\s*(.+)$/i],
       ["currency", /^(?:valuuta|currency)\s*:?\s*([A-Z]{3})$/i],
     ];
@@ -75,7 +80,10 @@ export function extractLocalInvoice(text: string, payer?: LocalPayer) {
         add(field, localAmount(value));
         for (const currency of value.match(/\b(?:EUR|USD|GBP|SEK|NOK|DKK|CHF|PLN)\b/gi) ?? []) add("currency", currency.toUpperCase());
         if (value.includes("€")) add("currency", "EUR");
-      } else if (field === "invoiceDate" || field === "dueDate") add(field, localDate(value));
+      } else if (field === "invoiceDate" || field === "dueDate") {
+        if (field === "dueDate" && termMatch && !paymentDateValue.test(value)) continue;
+        add(field, localDate(value));
+      }
       else add(field, field === "currency" ? value.toUpperCase() : value);
     }
   }
@@ -89,5 +97,10 @@ export function extractLocalInvoice(text: string, payer?: LocalPayer) {
     result.amountDue = null;
     delete result.confidence.amountDue;
   }
-  return result;
+  // An ambiguous or invalid printed deadline must not be replaced by a calculated one.
+  if (invalid.has("dueDate") || (candidates.get("dueDate")?.size ?? 0) > 1) {
+    result.paymentTermDays = null;
+    delete result.confidence.paymentTermDays;
+  }
+  return normalizeInvoice(result);
 }

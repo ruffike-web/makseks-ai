@@ -4,9 +4,9 @@
 
 ## Käivitamine
 
-- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.7.4-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
-- **Paigaldatav:** käivita `release/Makseks-AI-0.7.4-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
-- **Ühe EXE portable:** `release/Makseks-AI-0.7.4-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
+- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.8.0-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
+- **Paigaldatav:** käivita `release/Makseks-AI-0.8.0-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
+- **Ühe EXE portable:** `release/Makseks-AI-0.8.0-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
 
 Paketid on Windows x64 jaoks. Node.js, kohalik server ja pangaskeemid on kaasas. Käsitsi sisestamine, kontroll ja maksefailide loomine töötavad internetita; AI vajab internetti. Programm ei algata makseid. EXE on allkirjastamata: Windows SmartScreen võib kuvada tundmatu avaldaja teate.
 
@@ -27,6 +27,10 @@ Varasema veebirakenduse andmete toomiseks:
 
 Ava **Seaded → Keel / Language** ning vali **Eesti** või **English**. Kasutajaliides ja Windowsi menüüd vahetavad keelt kohe. Valik salvestub andmekausta failis `ui-preferences.json` ja kehtib kõigile ettevõtetele. Ettevõtete ja tarnijate nimesid ning arvete andmeid ei tõlgita. Keele muutmine ei muuda makseandmeid ega tühista arvete kinnitusi.
 
+## Hele ja tume kujundus
+
+Uus kujundus kasutab grafiithalle pindu ja sinist rõhuvärvi. Ülaribal või seadetes vali **Kujundus → Hele**, **Tume** või **Süsteemi järgi**. Süsteemi valik järgib Windowsi heledat või tumedat kujundust. Valik salvestub koos keelega faili `ui-preferences.json`, kehtib kõigile ettevõtetele ja säilib pärast programmi taaskäivitamist.
+
 ## Kohalik lugemine ilma AI-teenuseta
 
 Impordivaates vali **Andmete lugemine → Kohalik lugemine — ilma AI-teenuseta** ja lisa PDF. See on impordi vaikimisi valik. Programm otsib tekstiga PDF-ist eesti- ja ingliskeelsete väljade nimetuste järgi tarnija nime, registrikoodi, IBAN-i/BIC-i, arve- ja kliendinumbrit, viitenumbrit, kuupäevi ning selgelt märgitud tasumisele kuuluvat summat ja valuutat. Arvutist andmeid välja ei saadeta ning API-võtit ega internetti pole vaja.
@@ -39,9 +43,29 @@ Tarnija üheselt kattuva konto, registrikoodi või nime puhul kasutatakse aktiiv
 
 Pildid ja skannitud PDF-id vajavad käsitsi sisestamist või AI-lugemist; kohalik OCR ei kuulu sellesse versiooni. Ka keerulise paigutuse või tundmatute väljade nimetustega tekstiga PDF võib vajada käsitsi täitmist. Kohalik lugeja töötleb kuni 20-leheküljelisi, kuni 100 000 tekstimärgiga PDF-e; suurema dokumendi puhul jääb käsitsi kontroll alles. Ainult võrdluseks faili importimiseks vali **Käsitsi sisestamine**. AI kasutamiseks vali impordivaates **AI lugemine**; selleks peavad seadetes olema võti ja aktiivse ettevõtte nõusolek.
 
+## Maksetähtaeg päevades
+
+Kui arvel on näiteks **Maksetähtaeg: 14 päeva** või **Payment terms: Net 30**, liidab programm selgelt märgitud päevade arvu arve kuupäevale. Kasutatakse kalendripäevi: arve kuupäev 27.10.2026 ja 14 päeva annavad tähtpäevaks 10.11.2026. See töötab kohaliku ja AI-lugemise järel ning päevade arvu saab arve kontrollis väljal **Maksetähtaeg päevades** käsitsi parandada.
+
+Arve kuupäeva või päevade arvu muutmisel uueneb ka tähtpäev, kui senine tähtpäev oli tühi või vastas senisele arvutusele. Sellest erinevaks käsitsi parandatud tähtpäev jääb alles.
+
+Selgelt kirjas olev maksetähtpäev on päevade järgi arvutamisest ülimuslik. Ilma kehtiva arve kuupäeva ja üheselt mõistetava päevade arvuta tähtpäeva ei oletata. Tööpäevade, kuude või vastuoluliste tingimuste korral määra tähtpäev käsitsi. Arvutatud tähtpäev tuleb koos muude makseandmetega enne kinnitamist üle kontrollida.
+
+## Otsimine, leheküljed ja järjestamine
+
+Arvete nimekirjas kasuta välja **Otsi arveid**, et leida arve tarnija või arvenumbri järgi. Tarnijate vaates on eraldi väli **Otsi tarnijaid** salvestatud tarnijate leidmiseks. Otsing ja filtrid rakenduvad kogu vastavale nimekirjale, mitte ainult avatud leheküljele.
+
+Arvete ja tarnijate nimekirjas kuvatakse kuni **10 rida leheküljel**. Lehevalikuga saab liikuda järgmise või eelmise kümne kirje juurde. Valikust **Järjesta arved** saab valida tarnija A–Z, uuemad või vanemad arve kuupäevad enne või varasemad maksetähtpäevad enne. Tarnijaid saab järjestada A–Z või Z–A. Kuupäeva järgi järjestamine muudab ainult nimekirja kuvamist, mitte makse kuupäeva.
+
+## Arvete arhiiv
+
+Kasuta arve real toimingut **Arhiveeri**, et tõsta arve aktiivsest nimekirjast **Arhiivi**. Arhiveeritud arved ei kuulu aktiivsete arvete kokkuvõttesse ega maksefaili valikusse. Arhiiv säilitab arve andmed, kinnituse ja ekspordiajaloo; samade arvete võimalikud duplikaadid jäävad kontrollitavaks.
+
+Arhiivi vaates toob **Taasta** arve tagasi aktiivsesse nimekirja. Enne arhiveeritud arve muutmist või kinnitamist tuleb see taastada. Ekspordiajalugu säilib ka pärast taastamist ning varasema ekspordi korduskontroll jääb kehtima. Arhiveerimine ei tähenda, et arve on pangas tasutud. Iga ettevõtte arhiiv on eraldi.
+
 ## Valmis arvete maksetähtpäev
 
-Kinnitatud, veel eksportimata **Valmis** arve rida muutub helepunaseks, kui arve maksetähtpäev on täna või möödas. Staatus ja tähtpäev on punased ning rea juurde ilmub **Tähtaeg täna** või **Tähtaeg möödas**. Võrdluseks kasutatakse arve maksetähtpäeva, mitte makse kuupäeva, ning Eesti kuupäeva (`Europe/Tallinn`). Märgistus uueneb avatud programmis iga 30 sekundi järel ja aknasse naasmisel.
+Kinnitatud, veel eksportimata **Valmis** arve rida saab punaka tausta, kui arve maksetähtpäev on täna või möödas. Staatus ja tähtpäev on punased ning rea juurde ilmub **Tähtaeg täna** või **Tähtaeg möödas**. Võrdluseks kasutatakse arve maksetähtpäeva, mitte makse kuupäeva, ning Eesti kuupäeva (`Europe/Tallinn`). Märgistus uueneb avatud programmis iga 30 sekundi järel ja aknasse naasmisel.
 
 Kui vähemalt ühe valmis arve tähtaeg on käes, muutuvad punaseks ka **Valmis makseid** ja **Valmis maksete summa**. Need näitavad endiselt kõigi valmis arvete arvu ja kogusummat. Märgistus ei muuda arve kinnitust, makse kuupäeva ega ekspordivalikut. Tulevase tähtpäevaga, kontrollimata või eksporditud arved seda märgistust ei saa. **Eksporditud** tähendab, et maksefail on loodud; see ei kinnita pangas tasumist.
 

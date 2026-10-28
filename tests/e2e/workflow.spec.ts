@@ -229,7 +229,8 @@ test("uploads PDF and PNG while isolating a spoofed image failure", async ({
   await expect(
     page.getByRole("alert").filter({ hasText: "2 arvet lisatud" }),
   ).toBeVisible({ timeout: 30000 });
-  const row = page.getByRole("row").filter({ hasText: `PDF-${tag}.pdf` });
+  await page.getByLabel("Otsi arveid").fill(`PDF-${tag}.pdf`);
+  const row = page.getByRole("row").filter({ hasText: "TEST-1" });
   await row.getByRole("button", { name: "Kontrolli", exact: false }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByTitle("Algne ostuarve")).toBeVisible();

@@ -42,7 +42,7 @@ for (const provider of ["openai", "anthropic"] as const)
         model: provider === "openai" ? "gpt-6.1-sol" : "claude-sonnet-5-5",
         apiKey: `${provider}-secret`,
       }));
-      const output = blankInvoice();
+      const output = { ...blankInvoice(), invoiceDate: "2026-10-28", paymentTermDays: "14" };
       const fetchMock = vi.fn().mockResolvedValue(
         Response.json(
           provider === "openai"
@@ -71,6 +71,7 @@ for (const provider of ["openai", "anthropic"] as const)
         bytes: Buffer.from("test-document"),
       });
       expect(result.amountDue).toBeNull();
+      expect(result.dueDate).toBe("2026-11-11");
       const [url, init] = fetchMock.mock.calls[0];
       expect(url).toContain(
         provider === "openai" ? "api.openai.com" : "api.anthropic.com",
@@ -84,6 +85,8 @@ for (const provider of ["openai", "anthropic"] as const)
           mime === "application/pdf" ? "input_file" : "input_image",
         );
         expect(body.text.format.strict).toBe(true);
+        expect(body.text.format.schema.required).toContain("paymentTermDays");
+        expect(body.text.format.schema.properties.paymentTermDays).not.toHaveProperty("default");
       } else
         expect(body.messages[0].content[0].type).toBe(
           mime === "application/pdf" ? "document" : "image",

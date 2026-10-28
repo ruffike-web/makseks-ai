@@ -24,6 +24,8 @@ export function SettingsView({
     t,
     language,
     setLanguage,
+    theme,
+    setTheme,
     saving: savingLanguage,
     error: languageError,
   } = useLanguage();
@@ -101,7 +103,16 @@ export function SettingsView({
       </div>
       <div className="stack">
         <section className="panel">
-          <h2>{t("Kasutajaliidese keel")}</h2>
+          <h2>{t("Välimus ja keel")}</h2>
+          <label className="field">
+            <span>{t("Kujundus")}</span>
+            <select aria-label={t("Kujundus")} value={theme} disabled={savingLanguage} onChange={(event) => void setTheme(event.target.value as typeof theme)}>
+              <option value="light">{t("Hele")}</option>
+              <option value="dark">{t("Tume")}</option>
+              <option value="system">{t("Süsteemi järgi")}</option>
+            </select>
+          </label>
+          <p className="help">{t("Kujundus muutub kohe ja jääb selles arvutis meelde.")}</p>
           <label className="field">
             <span>Keel / Language</span>
             <select

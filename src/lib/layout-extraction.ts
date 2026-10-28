@@ -1,6 +1,7 @@
 import { isValidIBAN, isValidBIC } from "ibantools";
-import { blankInvoice, type InvoiceField } from "./domain";
+import { blankInvoice, normalizeInvoice, type InvoiceField } from "./domain";
 import { localAmount, localDate, type LocalPayer } from "./local-extraction";
+import { parsePaymentTermValue, paymentDateValue, paymentTermsLabel } from "./payment-terms";
 import type { PdfCell, PdfLine } from "./pdf-layout";
 
 type Located = PdfCell & { page: number; row: number; col: number };
@@ -22,6 +23,7 @@ const rules: [InvoiceField, RegExp][] = [
     /^(?:koondarve|arve-saateleht|arve\s*(?:nr\.?|number)?|invoice\s*(?:no\.?|number|#)?)\s*[:.]?\s*/i,
   ],
   ["invoiceDate", /^(?:arve kuupäev|invoice date|kuupäev)\s*:?\s*/i],
+  ["paymentTermDays", paymentTermsLabel],
   [
     "dueDate",
     /^(?:maksetähtpäev|maksetähtaeg|maksekuupäev|tasumise tähtaeg|tähtaeg|due date|payment due)\s*:?\s*/i,
@@ -269,11 +271,14 @@ export function extractLayoutInvoice(input: PdfLine[], payer?: LocalPayer) {
         for (const code of (cell.text + " " + value).match(currencyPattern) ??
           [])
           explicitCurrencies.add(code === "€" ? "EUR" : code.toUpperCase());
+      } else if (field === "paymentTermDays") {
+        if (!paymentDateValue.test(value)) add(field, parsePaymentTermValue(value, match[0]));
       } else if (field === "invoiceDate" || field === "dueDate") {
         const token = /^(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4})(?:\s|$)/.exec(
           value,
         );
         if (token) add(field, localDate(token[1]));
+        else if (field === "invoiceDate" || paymentDateValue.test(value) || !paymentTermsLabel.test(cell.text)) add(field, null);
       } else {
         const token =
           field === "referenceNumber"
@@ -312,5 +317,9 @@ export function extractLayoutInvoice(input: PdfLine[], payer?: LocalPayer) {
     data.amountDue = null;
     delete data.confidence.amountDue;
   }
-  return { data, accountCandidates: [...accounts] };
+  if (invalid.has("dueDate") || (values.get("dueDate")?.size ?? 0) > 1) {
+    data.paymentTermDays = null;
+    delete data.confidence.paymentTermDays;
+  }
+  return { data: normalizeInvoice(data), accountCandidates: [...accounts] };
 }

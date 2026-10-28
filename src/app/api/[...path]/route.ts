@@ -184,6 +184,21 @@ async function handle(request: Request, context: Context) {
     if (
       resource === "invoices" &&
       id &&
+      path.length === 3 &&
+      (action === "archive" || action === "restore") &&
+      request.method === "POST"
+    ) {
+      const input = z
+        .object({ version: z.number().int().nonnegative() })
+        .strict()
+        .parse(body);
+      if (action === "archive") await service.archiveInvoice(id, input.version);
+      else await service.restoreInvoice(id, input.version);
+      return json({ ok: true });
+    }
+    if (
+      resource === "invoices" &&
+      id &&
       action === "approve" &&
       request.method === "POST"
     ) {

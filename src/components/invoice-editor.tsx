@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   fieldLabels,
   invoiceFields,
+  updateInvoiceField,
   type InvoiceData,
   type InvoiceField,
 } from "@/lib/domain";
@@ -25,6 +26,7 @@ type Props = {
   save: (d: InvoiceData) => Promise<void>;
   approve: (a: Approval) => Promise<void>;
   applySupplier: () => Promise<void>;
+  restore?: () => Promise<void>;
 };
 const mainFields: InvoiceField[] = [
   "supplierName",
@@ -32,6 +34,8 @@ const mainFields: InvoiceField[] = [
   "invoiceNumber",
   "amountDue",
   "currency",
+  "invoiceDate",
+  "paymentTermDays",
   "dueDate",
   "referenceNumber",
   "customerNumber",
@@ -45,6 +49,7 @@ export function InvoiceEditor({
   save,
   approve,
   applySupplier,
+  restore,
 }: Props) {
   const { t, message: translateMessage } = useLanguage();
   const [data, setData] = useState(i.data),
@@ -56,6 +61,7 @@ export function InvoiceEditor({
       reviewContext: i.reviewContext,
     });
   const dirty = JSON.stringify(data) !== JSON.stringify(i.data);
+  const archived = Boolean(i.archivedAt);
   function field(f: InvoiceField) {
     const provenance =
       JSON.stringify(data[f]) !== JSON.stringify(i.data[f])
@@ -78,12 +84,14 @@ export function InvoiceEditor({
           ].includes(f) && <b className="required"> *</b>}
         </span>
         <input
-          disabled={busy}
-          type={f === "dueDate" || f === "invoiceDate" ? "date" : "text"}
-          inputMode={f === "amountDue" ? "decimal" : undefined}
+          disabled={busy || archived}
+          type={f === "dueDate" || f === "invoiceDate" ? "date" : f === "paymentTermDays" ? "number" : "text"}
+          min={f === "paymentTermDays" ? 0 : undefined}
+          step={f === "paymentTermDays" ? 1 : undefined}
+          inputMode={f === "amountDue" ? "decimal" : f === "paymentTermDays" ? "numeric" : undefined}
           value={data[f] ?? ""}
           onChange={(e) => {
-            setData({ ...data, [f]: e.target.value || null });
+            setData(updateInvoiceField(data, f, e.target.value || null));
             setAck({ ...ack, reviewed: false });
           }}
           placeholder={
@@ -186,6 +194,7 @@ export function InvoiceEditor({
             )}
           </aside>
           <div className="editor-form">
+            {archived && <p className="notice">{t("Arhiveeritud arve on kirjutuskaitstud. Muutmiseks või maksefaili lisamiseks taasta arve.")}</p>}
             {error && (
               <div role="alert" className="notification error">
                 {translateMessage(error)}
@@ -195,7 +204,7 @@ export function InvoiceEditor({
             {i.accountCandidates.length > 1 && (
               <label className="field">
                 <span>{t("Tarnija pangakontod")}</span>
-                <select disabled={busy} value={i.accountCandidates.includes(data.supplierIban ?? "") ? data.supplierIban! : ""} onChange={(event) => {
+                <select disabled={busy || archived} value={i.accountCandidates.includes(data.supplierIban ?? "") ? data.supplierIban! : ""} onChange={(event) => {
                   if (!event.target.value) return;
                   setData({ ...data, supplierIban: event.target.value, supplierBic: null });
                   setAck({ ...ack, reviewed: false });
@@ -219,7 +228,7 @@ export function InvoiceEditor({
                   .map(field)}
               </div>
             </details>
-            {i.supplier && (
+            {i.supplier && !archived && (
               <button
                 type="button"
                 className="button subtle"
@@ -249,6 +258,7 @@ export function InvoiceEditor({
                   ))}
               </ul>
             )}
+            {!archived && <>
             {(i.duplicate || i.exportedAt) && (
               <label className="check warning">
                 <input
@@ -340,6 +350,8 @@ export function InvoiceEditor({
               {i.data.amountDue ? `${euro(i.data.amountDue)} · ` : ""}
               {t("Kinnitus ei algata makset.")}
             </p>
+            </>}
+            {archived && restore && <div className="editor-actions"><button className="button primary" disabled={busy} onClick={() => void restore()}>{t("Taasta arve")}</button></div>}
           </div>
         </div>
       </section>

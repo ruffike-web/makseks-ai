@@ -4,6 +4,8 @@ import Link from "next/link";
 import { bankOptions, bankProfiles } from "@/lib/bank-profiles";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  IconArchive,
+  IconArchiveOff,
   IconArrowRight,
   IconCheck,
   IconChecks,
@@ -38,6 +40,8 @@ import { SettingsView } from "./settings";
 import { InvoiceEditor, type Preview } from "./invoice-editor";
 import { SupplierEditor } from "./supplier-editor";
 import type { SupplierData } from "@/lib/suppliers";
+import { invoiceList, supplierList, listPage, type InvoiceOrder } from "@/lib/list-view";
+import { Pagination } from "./pagination";
 type View = "import" | "review" | "export" | "suppliers" | "settings";
 const navigation = [
   { id: "import", label: "Arvete import", icon: IconCloudUpload },
@@ -94,7 +98,7 @@ export function CompanyWorkspace({
   createCompany: (name: string) => Promise<void>;
   reloadCompanies: () => Promise<void>;
 }) {
-  const { t, message: translateMessage } = useLanguage();
+  const { t, language, theme, setTheme, saving: savingPreferences, message: translateMessage } = useLanguage();
   const api = useCallback(
     function scopedApi<T = unknown>(
       path: string,
@@ -128,7 +132,15 @@ export function CompanyWorkspace({
     [editing, setEditing] = useState<string | null>(null),
     [editingSupplier, setEditingSupplier] = useState<SupplierData | null>(null),
     [query, setQuery] = useState(""),
-    [filter, setFilter] = useState<"all" | Status>("all"),
+    [filter, setFilter] = useState<"all" | "archived" | Status>("all"),
+    [invoiceOrder, setInvoiceOrder] = useState<InvoiceOrder>("date-desc"),
+    [invoicePage, setInvoicePage] = useState(1),
+    [exportQuery, setExportQuery] = useState(""),
+    [exportOrder, setExportOrder] = useState<InvoiceOrder>("date-desc"),
+    [exportPage, setExportPage] = useState(1),
+    [supplierQuery, setSupplierQuery] = useState(""),
+    [supplierDescending, setSupplierDescending] = useState(false),
+    [supplierPage, setSupplierPage] = useState(1),
     [selected, setSelected] = useState<string[]>([]),
     [dragging, setDragging] = useState(false),
     [progress, setProgress] = useState(""),
@@ -276,18 +288,27 @@ export function CompanyWorkspace({
       });
     }, "Maksefail on valmis. Laadi see alla ja impordi internetipanka.");
   }
-  const current = state?.invoices.find((i) => i.id === editing),
+  const current = [...(state?.invoices ?? []), ...(state?.archivedInvoices ?? [])].find((i) => i.id === editing),
     ready = state?.invoices.filter((i) => i.status === "READY") ?? [];
-  const filtered =
-    state?.invoices.filter(
-      (i) =>
-        (filter === "all" ||
-          i.status === filter ||
-          (filter === "READY" && i.status === "EXPORTED")) &&
-        `${i.data.supplierName} ${i.data.invoiceNumber} ${i.sourceFileName}`
-          .toLocaleLowerCase("et")
-          .includes(query.toLocaleLowerCase("et")),
-    ) ?? [];
+  const filtered = invoiceList(filter === "archived" ? state?.archivedInvoices ?? [] :
+    state?.invoices.filter((i) => filter === "all" || i.status === filter || (filter === "READY" && i.status === "EXPORTED")) ?? [], query, invoiceOrder, language);
+  const invoiceRows = listPage(filtered, invoicePage);
+  const exportRows = listPage(invoiceList(ready, exportQuery, exportOrder, language), exportPage);
+  const supplierRows = listPage(supplierList(state?.suppliers ?? [], supplierQuery, supplierDescending, language), supplierPage);
+  function orderSelect(value: InvoiceOrder, onChange: (value: InvoiceOrder) => void) {
+    return <select className="list-order" aria-label={t("Järjesta arved")} value={value} onChange={(event) => onChange(event.target.value as InvoiceOrder)}>
+      <option value="date-desc">{t("Arve kuupäev: uuemad enne")}</option>
+      <option value="date-asc">{t("Arve kuupäev: vanemad enne")}</option>
+      <option value="supplier">{t("Tarnija: A–Z")}</option>
+      <option value="due">{t("Maksetähtpäev: varasemad enne")}</option>
+    </select>;
+  }
+  async function archiveInvoice(invoice: InvoiceView, restore = false) {
+    await perform(async () => {
+      await api(`invoices/${invoice.id}/${restore ? "restore" : "archive"}`, "POST", { version: invoice.version });
+      if (editing === invoice.id) setEditing(null);
+    }, restore ? "Arve on arhiivist taastatud." : "Arve on arhiveeritud. Leiad selle arhiivi vahelehelt.");
+  }
   const total = (items: InvoiceView[]) =>
     formatCents(
       items.reduce((sum, i) => sum + (parseCents(i.data.amountDue) ?? 0n), 0n),
@@ -327,21 +348,20 @@ export function CompanyWorkspace({
                 <th>
                   <input
                     type="checkbox"
-                    aria-label={t("Vali kõik valmis maksed")}
+                    aria-label={t("Vali selle lehe maksed")}
                     checked={
                       items.length > 0 &&
                       items.every((i) => selected.includes(i.id))
                     }
                     onChange={(e) =>
-                      setSelected(
-                        e.target.checked ? items.map((i) => i.id) : [],
-                      )
+                      setSelected((previous) => e.target.checked ? [...new Set([...previous, ...items.map((i) => i.id)])] : previous.filter((id) => !items.some((i) => i.id === id)))
                     }
                   />
                 </th>
               )}
               <th>{t("Tarnija / arve")}</th>
               <th>{t("Staatus")}</th>
+              <th>{t("Arve kuupäev")}</th>
               <th>{t("Maksetähtpäev")}</th>
               <th>{t("Makse kuupäev")}</th>
               <th className="align-right">{t("Summa")}</th>
@@ -352,7 +372,7 @@ export function CompanyWorkspace({
           </thead>
           <tbody>
             {items.map((i) => {
-              const attention = invoiceDueAttention(i, today);
+              const attention = !i.archivedAt && invoiceDueAttention(i, today);
               return (
                 <tr
                   key={i.id}
@@ -389,7 +409,7 @@ export function CompanyWorkspace({
                     </small>
                   </td>
                   <td>
-                    <Badge status={i.status} />
+                    {i.archivedAt ? <span className="badge archived"><IconArchive size={13} />{t("Arhiveeritud")}</span> : <Badge status={i.status} />}
                     {attention && (
                       <small className="due-note">
                         {t(
@@ -400,6 +420,7 @@ export function CompanyWorkspace({
                       </small>
                     )}
                   </td>
+                  <td>{i.data.invoiceDate || "—"}</td>
                   <td className={attention ? "due-date" : undefined}>
                     {i.data.dueDate || "—"}
                   </td>
@@ -413,8 +434,12 @@ export function CompanyWorkspace({
                         className="text-button"
                         onClick={() => setEditing(i.id)}
                       >
-                        {t("Kontrolli")} <IconArrowRight size={15} />
+                        {t(i.archivedAt ? "Vaata" : "Kontrolli")} <IconArrowRight size={15} />
                       </button>
+                      <button className="icon-button muted" title={t(i.archivedAt ? "Taasta" : "Arhiveeri")} aria-label={t(i.archivedAt ? "Taasta arve {number}" : "Arhiveeri arve {number}", { number: i.data.invoiceNumber || i.sourceFileName })} disabled={busy} onClick={() => void archiveInvoice(i, Boolean(i.archivedAt))}>
+                        {i.archivedAt ? <IconArchiveOff size={17} /> : <IconArchive size={17} />}
+                      </button>
+                      {!i.archivedAt && (
                       <button
                         className="icon-button muted"
                         aria-label={t("Kustuta arve {number}", {
@@ -438,6 +463,7 @@ export function CompanyWorkspace({
                       >
                         <IconTrash size={16} />
                       </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -493,6 +519,14 @@ export function CompanyWorkspace({
             {t(navigation.find((n) => n.id === view)?.label ?? "")}
           </span>
           <div className="company-controls">
+            <label className="theme-choice">
+              <span className="sr-only">{t("Kujundus")}</span>
+              <select aria-label={t("Kujundus")} value={theme} disabled={savingPreferences} onChange={(e) => void setTheme(e.target.value as typeof theme)}>
+                <option value="light">{t("Hele")}</option>
+                <option value="dark">{t("Tume")}</option>
+                <option value="system">{t("Süsteemi järgi")}</option>
+              </select>
+            </label>
             <label className="company-choice">
               <span>{t("Ettevõte")}</span>
               <select
@@ -612,7 +646,7 @@ export function CompanyWorkspace({
                       title={index === 1 ? dueSummary : undefined}
                     >
                       <span>{t(s.label)}</span>
-                      <strong className={index === 1 ? "green" : ""}>
+                      <strong className={index === 1 ? "accent" : ""}>
                         {s.value}
                       </strong>
                       {index === 1 && dueSummary && (
@@ -842,18 +876,19 @@ export function CompanyWorkspace({
                   <div className="table-toolbar">
                     <div className="filter-tabs">
                       {(
-                        ["all", "REVIEW_REQUIRED", "READY", "INVALID"] as const
+                        ["all", "REVIEW_REQUIRED", "READY", "INVALID", "archived"] as const
                       ).map((f) => (
                         <button
                           className={filter === f ? "active" : ""}
                           key={f}
-                          onClick={() => setFilter(f)}
+                          onClick={() => { setFilter(f); setInvoicePage(1); }}
+                          aria-pressed={filter === f}
                         >
                           {f === "all"
                             ? t("Kõik arved")
                             : f === "READY"
                               ? t("Valmis arved")
-                              : t(statusLabels[f])}
+                              : f === "archived" ? t("Arhiiv") : t(statusLabels[f])}
                         </button>
                       ))}
                     </div>
@@ -862,10 +897,11 @@ export function CompanyWorkspace({
                       <input
                         aria-label={t("Otsi arveid")}
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
+                        onChange={(e) => { setQuery(e.target.value); setInvoicePage(1); }}
                         placeholder={t("Otsi tarnijat või arvet")}
                       />
                     </label>
+                    {orderSelect(invoiceOrder, (order) => { setInvoiceOrder(order); setInvoicePage(1); })}
                     <button
                       className="button secondary small"
                       disabled={busy}
@@ -875,8 +911,9 @@ export function CompanyWorkspace({
                       {t("Lisa arve")}
                     </button>
                   </div>
+                  {filter === "archived" && <p className="archive-notice">{t("Arhiveeritud arved ei kuulu aktiivsete maksete hulka. Taastamisel säilivad varasemad andmed ja ekspordiajalugu.")}</p>}
                   {filtered.length ? (
-                    table(filtered)
+                    table(invoiceRows.items)
                   ) : (
                     <div className="empty-state">
                       <IconChecks size={38} stroke={1.4} />
@@ -890,6 +927,7 @@ export function CompanyWorkspace({
                       </button>
                     </div>
                   )}
+                  <Pagination {...invoiceRows} onPage={setInvoicePage} label="Arvete leheküljed" />
                 </section>
               )}
               {view === "export" && (
@@ -902,8 +940,12 @@ export function CompanyWorkspace({
                           {ready.length} {t("makset")}
                         </span>
                       </div>
+                      <div className="table-toolbar list-controls">
+                        <label className="search"><IconSearch size={17} /><input aria-label={t("Otsi makseid")} placeholder={t("Otsi tarnijat või arvet")} value={exportQuery} onChange={(e) => { setExportQuery(e.target.value); setExportPage(1); }} /></label>
+                        {orderSelect(exportOrder, (order) => { setExportOrder(order); setExportPage(1); })}
+                      </div>
                       {ready.length ? (
-                        table(ready, true)
+                        exportRows.total ? table(exportRows.items, true) : <div className="empty-state"><h3>{t("Otsingule ei leitud vasteid")}</h3><p>{t("Proovi teist nime, arvenumbrit või IBAN-i.")}</p></div>
                       ) : (
                         <div className="empty-state">
                           <IconFileTypeXml size={40} stroke={1.3} />
@@ -921,6 +963,7 @@ export function CompanyWorkspace({
                           </button>
                         </div>
                       )}
+                      <Pagination {...exportRows} onPage={setExportPage} label="Maksete leheküljed" />
                     </section>
                     <aside className="panel export-summary">
                       <p className="eyebrow">{t("MAKSEFAILI KOKKUVÕTE")}</p>
@@ -1009,9 +1052,15 @@ export function CompanyWorkspace({
               )}
               {view === "suppliers" && (
                 <section className="panel">
-                  {state.suppliers.length ? (
+                  <div className="table-toolbar list-controls">
+                    <label className="search"><IconSearch size={17} /><input aria-label={t("Otsi tarnijaid")} placeholder={t("Nimi, registrikood või IBAN")} value={supplierQuery} onChange={(e) => { setSupplierQuery(e.target.value); setSupplierPage(1); }} /></label>
+                    <select className="list-order" aria-label={t("Järjesta tarnijad")} value={supplierDescending ? "desc" : "asc"} onChange={(e) => { setSupplierDescending(e.target.value === "desc"); setSupplierPage(1); }}>
+                      <option value="asc">{t("Tarnija: A–Z")}</option><option value="desc">{t("Tarnija: Z–A")}</option>
+                    </select>
+                  </div>
+                  {supplierRows.total ? (
                     <div className="supplier-list">
-                      {state.suppliers.map((s) => (
+                      {supplierRows.items.map((s) => (
                         <div className="supplier-row" key={s.id}>
                           <div className="supplier-avatar">
                             <IconUsers size={23} />
@@ -1063,6 +1112,8 @@ export function CompanyWorkspace({
                         </div>
                       ))}
                     </div>
+                  ) : state.suppliers.length ? (
+                    <div className="empty-state"><h3>{t("Otsingule ei leitud vasteid")}</h3><p>{t("Proovi teist nime, arvenumbrit või IBAN-i.")}</p></div>
                   ) : (
                     <div className="empty-state">
                       <IconUsers size={40} stroke={1.3} />
@@ -1082,6 +1133,7 @@ export function CompanyWorkspace({
                       </button>
                     </div>
                   )}
+                  <Pagination {...supplierRows} onPage={setSupplierPage} label="Tarnijate leheküljed" />
                 </section>
               )}
               {view === "settings" && (
@@ -1120,6 +1172,7 @@ export function CompanyWorkspace({
           preview={previews.current[current.id]}
           busy={busy}
           close={() => setEditing(null)}
+          restore={current.archivedAt ? () => archiveInvoice(current, true) : undefined}
           save={async (data) => {
             await perform(async () => {
               await api(`invoices/${current.id}`, "PUT", {

@@ -1,6 +1,49 @@
 // UI copy is keyed by its original Estonian text. User-entered data is never passed here.
 export type Language = "et" | "en";
 const entries = `
+Välimus ja keel|Appearance and language
+Kujundus|Appearance
+Hele|Light
+Tume|Dark
+Süsteemi järgi|System
+Kujundus muutub kohe ja jääb selles arvutis meelde.|The appearance changes immediately and is remembered on this computer.
+Välimuse ja keele laadimine ebaõnnestus. Vali eelistused uuesti.|Could not load appearance and language. Select your preferences again.
+Kujunduse salvestamine ebaõnnestus. Proovi uuesti.|Could not save the appearance. Try again.
+Maksetähtaeg päevades|Payment term in days
+Maksetähtaeg päevades peab olema mittenegatiivne täisarv.|The payment term in days must be a non-negative whole number.
+Järjesta arved|Sort invoices
+Arve kuupäev: uuemad enne|Invoice date: newest first
+Arve kuupäev: vanemad enne|Invoice date: oldest first
+Tarnija: A–Z|Supplier: A–Z
+Tarnija: Z–A|Supplier: Z–A
+Maksetähtpäev: varasemad enne|Due date: earliest first
+Otsi makseid|Search payments
+Otsi tarnijaid|Search suppliers
+Nimi, registrikood või IBAN|Name, registration code or IBAN
+Järjesta tarnijad|Sort suppliers
+Otsingule ei leitud vasteid|No matching results
+Proovi teist nime, arvenumbrit või IBAN-i.|Try another name, invoice number or IBAN.
+Arhiiv|Archive
+Arhiveeritud|Archived
+Arhiveeri|Archive
+Taasta|Restore
+Vaata|View
+Taasta arve|Restore invoice
+Arhiveeri arve {number}|Archive invoice {number}
+Taasta arve {number}|Restore invoice {number}
+Arve on arhiivist taastatud.|The invoice has been restored from the archive.
+Arve on arhiveeritud. Leiad selle arhiivi vahelehelt.|The invoice has been archived. You can find it on the Archive tab.
+Arhiveeritud arved ei kuulu aktiivsete maksete hulka. Taastamisel säilivad varasemad andmed ja ekspordiajalugu.|Archived invoices are excluded from active payments. Restoring them preserves their details and export history.
+Arhiveeritud arve on kirjutuskaitstud. Muutmiseks või maksefaili lisamiseks taasta arve.|An archived invoice is read-only. Restore it before editing or including it in a payment file.
+Taasta arve enne muutmist või kinnitamist.|Restore the invoice before editing or approving it.
+Vali selle lehe maksed|Select payments on this page
+Arvete leheküljed|Invoice pages
+Maksete leheküljed|Payment pages
+Tarnijate leheküljed|Supplier pages
+Eelmine lehekülg|Previous page
+Järgmine lehekülg|Next page
+Lehekülg {page}|Page {page}
+{start}–{end} / {total} kirjet|{start}–{end} of {total} records
 Tähtaeg täna|Due today
 Tähtaeg möödas|Overdue
 Maksetähtpäev on käes {count} eksportimata valmis arvel.|{count} unexported ready invoice(s) are due today or overdue.

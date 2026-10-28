@@ -9,22 +9,25 @@ Makseks AI is a Windows application for reviewing purchase invoices and preparin
 - Local reading of text PDFs without AI, an API key or internet access. The reader considers page layout; local OCR for scans and photos is not included.
 - Optional AI reading with Google Gemini, OpenAI, Anthropic Claude, Groq and Mistral Document AI. Select the provider, model and API key in Settings.
 - Manual entry, comparison with the original document, field provenance and human approval before export.
+- Due dates calculated from explicit payment terms in days and the invoice date when no separate due date is stated.
+- Invoice and supplier search with ten rows per page. Order invoices by supplier, invoice date or due date, and suppliers alphabetically.
+- Invoice archiving and restoration while retaining invoice details and export history.
 - Red highlights for unexported ready invoices due today or overdue, with a more compact summary and upload area.
 - Separate invoices, suppliers, banking settings and export history for multiple companies.
 - Editable supplier records: saved names, registration codes, addresses and an unambiguous account populate later invoices.
 - Validation of IBANs, references, amounts and dates, plus duplicate and changed-account checks.
 - SEB, LHV, Coop Pank and Swedbank profiles with local XSD validation.
-- Switchable Estonian and English interfaces.
+- Switchable Estonian and English interfaces, with a saved light, dark or system theme preference. Graphite and blue replace the previous green design.
 
 ## Windows downloads
 
-Version **0.7.4** is publicly available from the [Releases](https://github.com/ruffike-web/makseks-ai/releases) page.
+Version **0.8.0** is publicly available from the [Releases](https://github.com/ruffike-web/makseks-ai/releases) page.
 
 | Package | Use |
 | --- | --- |
-| `Makseks-AI-0.7.4-portable-kiire.zip` | Recommended portable version. Extract the whole ZIP once and run `Makseks AI.exe`. |
-| `Makseks-AI-0.7.4-setup.exe` | Installer; launch the application from the Start menu. |
-| `Makseks-AI-0.7.4-portable.exe` | Single file that extracts itself on every launch; starts more slowly. |
+| `Makseks-AI-0.8.0-portable-kiire.zip` | Recommended portable version. Extract the whole ZIP once and run `Makseks AI.exe`. |
+| `Makseks-AI-0.8.0-setup.exe` | Installer; launch the application from the Start menu. |
+| `Makseks-AI-0.8.0-portable.exe` | Single file that extracts itself on every launch; starts more slowly. |
 
 Packages target Windows x64 and include their own runtime. No separate Node.js installation or terminal is needed. Executables are unsigned, so Windows may ask for confirmation. Release checksums are provided in `SHA256SUMS.txt`.
 

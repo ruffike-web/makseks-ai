@@ -74,6 +74,7 @@ async function mockWorkspace(
     },
     today: "2026-10-22",
     invoices,
+    archivedInvoices: [],
     suppliers: [],
     payerIssues: [],
     aiConfigured: false,

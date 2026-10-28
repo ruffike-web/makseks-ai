@@ -130,9 +130,7 @@ export class InvoiceService {
         orderBy: { createdAt: "desc" },
       })
     ).map((r) => ({ ...JSON.parse(r.data), id: r.id }) as SupplierData);
-    const invoices = rows
-      .filter((row) => !row.archivedAt)
-      .map((row) => {
+    const allInvoices = rows.map((row) => {
         const data = parseData(row),
           identity = invoiceIdentity(data);
         const duplicate =
@@ -196,7 +194,8 @@ export class InvoiceService {
       companyId: this.companyId,
       settings,
       today,
-      invoices,
+      invoices: allInvoices.filter((row) => !row.archivedAt),
+      archivedInvoices: allInvoices.filter((row) => row.archivedAt),
       suppliers,
       payerIssues: validatePayer(settings),
       aiConfigured: ai.configured,
@@ -280,6 +279,8 @@ export class InvoiceService {
         }),
         old = parseData(row),
         provenance = JSON.parse(row.provenance) as Record<string, string>;
+      if (row.archivedAt)
+        throw new Error("Taasta arve enne muutmist või kinnitamist.");
       for (const f of invoiceFields)
         if (old[f] !== data[f]) provenance[f] = "user";
       // Confidence is extraction metadata; a client must not manufacture it.
@@ -407,6 +408,26 @@ export class InvoiceService {
       }
     });
   }
+  async archiveInvoice(id: string, version: number) {
+    await this.db.$transaction(async (store) => {
+      const result = await store.invoice.updateMany({
+        where: { id, companyId: this.companyId, version, archivedAt: null },
+        data: { archivedAt: this.now() },
+      });
+      if (!result.count)
+        throw new Error("Arve on vahepeal muutunud. Värskenda vaadet.");
+    });
+  }
+  async restoreInvoice(id: string, version: number) {
+    await this.db.$transaction(async (store) => {
+      const result = await store.invoice.updateMany({
+        where: { id, companyId: this.companyId, version, archivedAt: { not: null } },
+        data: { archivedAt: null },
+      });
+      if (!result.count)
+        throw new Error("Arve on vahepeal muutunud. Värskenda vaadet.");
+    });
+  }
   async deleteInvoice(id: string) {
     await this.db.$transaction(async (store) => {
       const row = await store.invoice.findUniqueOrThrow({
@@ -450,7 +471,7 @@ export class InvoiceService {
         where: {
           companyId: this.companyId,
           id: {
-            in: state.invoices
+            in: [...state.invoices, ...state.archivedInvoices]
               .filter((i) => i.supplier?.id === id && i.approvedAt)
               .map((i) => i.id),
           },

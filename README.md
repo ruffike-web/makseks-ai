@@ -9,22 +9,25 @@ Makseks AI on Windowsi rakendus ostuarvete kontrollimiseks ja pankade maksefaili
 - PDF-i kohalik lugemine ilma AI, API-võtme ja internetita. Lugeja arvestab teksti paigutust; piltide ja skannide kohalikku OCR-i pole.
 - Valikuline AI-lugemine: Google Gemini, OpenAI, Anthropic Claude, Groq ja Mistral Document AI. Teenusepakkuja, mudel ja API-võti valitakse seadetes.
 - Käsitsi sisestamine, algdokumendi võrdlus, andmete päritolu ning inimese kinnitus enne eksporti.
+- Päevades maksetähtaja arvutamine arve kuupäevast, kui eraldi tähtpäeva pole märgitud.
+- Arvete ja tarnijate otsing ning kümne reaga leheküljed. Arved järjestuvad tarnija, arve kuupäeva või tähtpäeva järgi; tarnijad tähestikuliselt.
+- Arvete arhiiv ja taastamine koos arve andmete ning ekspordiajaloo säilitamisega.
 - Eksportimata valmis arved märgitakse punaseks, kui nende maksetähtpäev on täna või möödas. Kokkuvõte ja üleslaadimisala võtavad vähem ruumi.
 - Mitme ettevõtte eraldi arved, tarnijad, pangaseaded ja ekspordiajalugu.
 - Muudetav tarnijaregister: salvestatud nimi, registrikood, aadress ja üheselt sobiv konto täidavad järgmiste arvete väljad.
 - IBAN-i, viitenumbri, summa, kuupäevade, võimalike duplikaatide ja muutunud kontode kontroll.
 - SEB, LHV, Coop Panga ja Swedbanki profiilid koos kohaliku XSD-valideerimisega.
-- Vahetatav eesti ja inglise kasutajaliides.
+- Vahetatav eesti ja inglise kasutajaliides ning salvestuv hele, tume või süsteemi järgiv kujundusvalik. Grafiithall ja sinine asendavad rohelise kujunduse.
 
 ## Windowsi programmi kasutamine
 
-Versiooni **0.7.4** failid asuvad [Releases](https://github.com/ruffike-web/makseks-ai/releases) lehel ja on avalikult allalaaditavad.
+Versiooni **0.8.0** failid asuvad [Releases](https://github.com/ruffike-web/makseks-ai/releases) lehel ja on avalikult allalaaditavad.
 
 | Pakett | Kasutus |
 | --- | --- |
-| `Makseks-AI-0.7.4-portable-kiire.zip` | Soovitatav portable. Paki kogu ZIP üks kord lahti ja käivita `Makseks AI.exe`. |
-| `Makseks-AI-0.7.4-setup.exe` | Paigaldusviisard ja käivitamine Start-menüüst. |
-| `Makseks-AI-0.7.4-portable.exe` | Üks fail, mis pakib sisu igal käivitusel ajutisse kausta; avaneb aeglasemalt. |
+| `Makseks-AI-0.8.0-portable-kiire.zip` | Soovitatav portable. Paki kogu ZIP üks kord lahti ja käivita `Makseks AI.exe`. |
+| `Makseks-AI-0.8.0-setup.exe` | Paigaldusviisard ja käivitamine Start-menüüst. |
+| `Makseks-AI-0.8.0-portable.exe` | Üks fail, mis pakib sisu igal käivitusel ajutisse kausta; avaneb aeglasemalt. |
 
 Paketid on Windows x64 jaoks. Node.js-i või terminali eraldi vaja ei ole. EXE-d on allkirjastamata ja Windows võib küsida käivituse kinnitust. Kontrollsummad on väljalaske failis `SHA256SUMS.txt`.
 

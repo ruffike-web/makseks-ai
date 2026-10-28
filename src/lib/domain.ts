@@ -2,6 +2,7 @@ import { z } from "zod";
 import { isValidIBAN, isSEPACountry } from "ibantools";
 import { bankIds, bankProfiles, defaultBank } from "./bank-profiles";
 import { aiProviderIds } from "./ai-providers";
+import { paymentTermCount } from "./payment-terms";
 export type { Bank } from "./bank-profiles";
 
 const text = z.string().max(2000).nullable();
@@ -17,6 +18,7 @@ export const invoiceSchema = z
     amountDue: text,
     currency: text,
     invoiceDate: text,
+    paymentTermDays: text.default(null),
     dueDate: text,
     supplierAddress: text,
     supplierStreet: text,
@@ -43,6 +45,7 @@ export const fieldLabels: Record<InvoiceField, string> = {
   amountDue: "Tasumisele kuuluv summa",
   currency: "Valuuta",
   invoiceDate: "Arve kuupäev",
+  paymentTermDays: "Maksetähtaeg päevades",
   dueDate: "Maksetähtpäev",
   supplierAddress: "Aadressirida",
   supplierStreet: "Tänav",
@@ -63,6 +66,7 @@ export function blankInvoice(): InvoiceData {
     amountDue: null,
     currency: null,
     invoiceDate: null,
+    paymentTermDays: null,
     dueDate: null,
     supplierAddress: null,
     supplierStreet: null,
@@ -162,6 +166,32 @@ export function validDate(s: string): boolean {
   if (y < 1900 || y > 9999 || m < 1 || m > 12 || d < 1) return false;
   return d <= new Date(Date.UTC(y, m, 0)).getUTCDate();
 }
+export function dueDateFromPaymentTerms(
+  invoiceDate: string | null | undefined,
+  paymentTermDays: string | null | undefined,
+): string | null {
+  const days = paymentTermCount(paymentTermDays);
+  if (!invoiceDate || !validDate(invoiceDate) || days === null) return null;
+  const result = new Date(`${invoiceDate}T00:00:00Z`);
+  result.setUTCDate(result.getUTCDate() + days);
+  if (!Number.isFinite(result.getTime())) return null;
+  const date = result.toISOString().slice(0, 10);
+  return validDate(date) ? date : null;
+}
+
+/** Keep a derived deadline in sync without replacing a different, manually supplied date. */
+export function updateInvoiceField(
+  invoice: InvoiceData,
+  field: InvoiceField,
+  value: string | null,
+): InvoiceData {
+  const next = { ...invoice, [field]: value || null };
+  if (
+    (field === "invoiceDate" || field === "paymentTermDays") &&
+    (!invoice.dueDate || invoice.dueDate === dueDateFromPaymentTerms(invoice.invoiceDate, invoice.paymentTermDays))
+  ) next.dueDate = dueDateFromPaymentTerms(next.invoiceDate, next.paymentTermDays);
+  return next;
+}
 export function estoniaToday(now = new Date()): string {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Tallinn",
@@ -216,6 +246,13 @@ export function normalizeInvoice(i: InvoiceData): InvoiceData {
     n.referenceNumber = n.referenceNumber.replace(/\s/g, "");
   const cents = parseCents(n.amountDue);
   if (cents !== null) n.amountDue = formatCents(cents);
+  if (!n.dueDate) {
+    n.dueDate = dueDateFromPaymentTerms(n.invoiceDate, n.paymentTermDays);
+    if (n.dueDate) n.confidence = {
+      ...i.confidence,
+      dueDate: Math.min(i.confidence.invoiceDate ?? 0, i.confidence.paymentTermDays ?? 0),
+    };
+  }
   return n;
 }
 const badXml = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/u; // XML 1.0 forbidden code points.
@@ -323,6 +360,8 @@ export function evaluateInvoice(
   for (const f of ["invoiceDate", "dueDate"] as const)
     if (i[f] && !validDate(i[f]))
       add("DATE", `${fieldLabels[f]} ei ole kehtiv kuupäev.`, "error", f);
+  if (i.paymentTermDays && paymentTermCount(i.paymentTermDays) === null)
+    add("PAYMENT_TERMS", "Maksetähtaeg päevades peab olema mittenegatiivne täisarv.", "error", "paymentTermDays");
   const executionDate = effectiveDate(i.dueDate, s, ctx.today);
   if (!executionDate)
     add(

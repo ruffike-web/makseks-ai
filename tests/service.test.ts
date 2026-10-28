@@ -67,6 +67,65 @@ afterAll(async () => {
   rmSync(temp, { recursive: true, force: true });
 });
 describe("persistent approval boundary", () => {
+  it("archives and restores an invoice without losing its content or review history", async () => {
+    const row = await service.createInvoice(data, { name: "archive.pdf", hash: "archive-source", method: "manual" });
+    await approve(row.id, 0, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: true });
+    const before = (await service.state()).invoices[0];
+    await service.archiveInvoice(row.id, before.version);
+    const archived = await service.state();
+    expect(archived.invoices).toHaveLength(0);
+    expect(archived.archivedInvoices).toHaveLength(1);
+    expect(archived.archivedInvoices[0]).toMatchObject({ data: before.data, originalData: before.originalData, provenance: before.provenance, version: before.version, approvedAt: before.approvedAt, sourceFileHash: "archive-source" });
+    expect(archived.archivedInvoices[0].archivedAt).toBeTruthy();
+    await expect(service.updateInvoice(row.id, before.version, { ...data, amountDue: "99.00" })).rejects.toThrow();
+    await expect(service.applySupplier(row.id, before.version)).rejects.toThrow();
+    await expect(service.approve(row.id, before.version, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: false, reviewContext: before.reviewContext })).rejects.toThrow();
+    await expect(service.exportInvoices([row.id])).rejects.toThrow();
+    expect(await db.exportRecord.count()).toBe(0);
+    await service.restoreInvoice(row.id, before.version);
+    const restored = await service.state();
+    expect(restored.archivedInvoices).toHaveLength(0);
+    expect(restored.invoices[0]).toMatchObject({ status: "READY", version: before.version, archivedAt: null, approvedAt: before.approvedAt, data: before.data });
+  });
+  it("keeps exported status and duplicate detection through archive and restore", async () => {
+    const row = await service.createInvoice(data, { name: "export.pdf", hash: "export-source", method: "manual" });
+    await approve(row.id, 0, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: false });
+    await service.exportInvoices([row.id]);
+    const before = (await service.state()).invoices[0];
+    await service.archiveInvoice(row.id, before.version);
+    expect((await service.state()).archivedInvoices[0]).toMatchObject({ status: "EXPORTED", exportedAt: before.exportedAt, exportedVersion: before.exportedVersion });
+    const duplicate = await service.createInvoice(data, { name: "duplicate.pdf", hash: "export-source", method: "manual" });
+    expect((await service.state()).invoices.find(i => i.id === duplicate.id)?.duplicate).toBe(true);
+    await service.restoreInvoice(row.id, before.version);
+    expect((await service.state()).invoices.find(i => i.id === row.id)?.status).toBe("EXPORTED");
+    await expect(service.exportInvoices([row.id])).rejects.toThrow();
+    expect(await db.exportRecord.count()).toBe(1);
+  });
+  it("isolates archives by company and rejects stale archive or restore requests", async () => {
+    const company = await createCompany(db, "Arhiivitest OÜ");
+    const other = new InvoiceService(db, undefined, company.id);
+    const row = await service.createInvoice(data, { name: "manual", method: "manual" });
+    await expect(other.archiveInvoice(row.id, 0)).rejects.toThrow();
+    await service.updateInvoice(row.id, 0, { ...data, invoiceNumber: "UPDATED" });
+    await expect(service.archiveInvoice(row.id, 0)).rejects.toThrow();
+    await service.archiveInvoice(row.id, 1);
+    expect((await other.state()).archivedInvoices).toHaveLength(0);
+    await expect(other.restoreInvoice(row.id, 1)).rejects.toThrow();
+    await expect(service.restoreInvoice(row.id, 0)).rejects.toThrow();
+    await service.restoreInvoice(row.id, 1);
+    expect((await service.state()).invoices[0].data.invoiceNumber).toBe("UPDATED");
+  });
+  it("revokes archived invoice approval when its saved supplier is changed", async () => {
+    const row = await service.createInvoice(data, { name: "manual", method: "manual" });
+    await approve(row.id, 0, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: true });
+    const before = await service.state();
+    await service.archiveInvoice(row.id, before.invoices[0].version);
+    await service.updateSupplier(before.suppliers[0].id, { ...before.suppliers[0], name: "Parandatud tarnija" });
+    const archived = (await service.state()).archivedInvoices[0];
+    expect(archived.approvedAt).toBeNull();
+    await service.restoreInvoice(row.id, archived.version);
+    expect((await service.state()).invoices[0].status).not.toBe("READY");
+  });
   it("blocks conflicting saved supplier name and account identities without replacing the invoice name", async () => {
     for (const [index, invoice] of [data, { ...data, supplierName: "Teine OÜ", supplierRegistrationCode: "87654321", supplierIban: "EE121010000000000016", invoiceNumber: "INV-B" }].entries()) {
       const row = await service.createInvoice(invoice, { name: `supplier-${index}`, method: "manual" });

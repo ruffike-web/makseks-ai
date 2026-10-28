@@ -6,6 +6,23 @@ Kasutaja on kinnitanud nii SEB kui ka LHV `pain.001.001.09` XML-maksefailide edu
 
 English: the user has confirmed successful real SEB and LHV `pain.001.001.09` internet-bank imports. Actual Coop Pank and Swedbank imports remain unverified. This user report is separate from the historical automated release tests below and is not official bank certification. Historical results and limitations remain unchanged.
 
+## 0.8.0 kontroll – 28.10.2026
+
+- `npm ci` paigaldas lukufaili sõltuvused ning genereeris Prisma kliendi. 187 testi 29 failis, TypeScript, ESLint ja Next.js 16.4.2 tootmisversiooni ehitus läbisid kontrolli.
+- `npm audit --omit=dev` ja kogu sõltuvuste audit andsid 0 teadaolevat nõrkust. `npm run audit:dependencies` läbis muutmata turvapoliitika. Sihitud sõltuvuste uuendused on kirjas [turvaülevaatuses](SECURITY_REVIEW.md).
+- Kõik 9 brauseritesti läbisid kontrolli. Uued katsed kasutavad 12 sünteetilist arvet ja tarnijat, kontrollides 10 rea lehekülgi, otsingut teiselt lehelt, kuupäeva- ja nimejärjestust, maksevaliku säilimist, arhiveerimist/taastamist ning ettevõtete eraldatust. Kontrolliti ka puuduliku ja võõra ettevõtte taastamispäringu tagasilükkamist.
+- Tähtaja testid katavad kalendripäevad, liigaasta, kuu/aasta vahetuse, suve-/talveaja piiri, käsitsi muudetud kuupäeva säilimise ning ebaselgete tingimuste välistamise. Kohalik lugemine ja simuleeritud AI-vastused kasutavad sama arvutust. Brauseris andis 28.02.2028 + 2 päeva tähtpäevaks 01.03.2028.
+- Hele/tume/süsteemi režiim, keele muutmine ja kujunduse säilimine lehe laadimisel läbisid brauserikontrolli. Ekraanipildid vaadati üle heledas ja tumedas režiimis ning 390 px laiuses vaates; varasemad punased tähtajateated toimivad endiselt.
+- Esimese brauserikatse kolm viga olid testide seadistuses: genereeritud Eesti näidis-IBAN ei läbinud siseriiklikku kontrolli, välja abitekst muutis täpse nimega lokaatorit ja PDF-i real kuvatakse tuvastatud arvenumber. Näidisandmed ja lokaatorid parandati; rakenduse valideerimist ei lõdvendatud.
+- Electron 44.10.0 Windows x64 paketid koostati edukalt. Pakendatud programmi keelekatse kontrollis eesti/inglise vahetamist, Windowsi menüüsid, salvestamata vormi säilimist ning tumeda kujunduse ja keele püsimist pärast taaskäivitamist. DPAPI võtmekatse läbis lihttekstivõtme teisendamise, krüpteeritud salvestamise, taaskäivitamise ning avamatu võtme asendamise ja eemaldamise.
+- Lõplik kiire portable-ZIP pakiti projekti välisesse ajutisse kausta. Iseseisev käivitumine, EXE kõrval andmekausta loomine, mudelivalikud, PDF-tekst ja kaasapandud PDF→PNG teisendus läbisid kontrolli. Kõigi nelja panga katses arvutati 06.10.2030 + 14 päeva = 20.10.2030, kinnitatud arve arhiveeriti ja taastati kinnitust säilitades ning eksporditud XML läbis XSD-kontrolli.
+- Lähtekoodi privaatsusaudit kontrollis 153 faili ja Windowsi paketi audit 2175 ressursifaili; kasutaja andmebaase ega teadaolevaid salajasi võtmeid ei leitud. Kiire portable-ZIP on 209 528 910 baiti, installer 153 188 594 baiti ja ühe EXE portable 152 976 888 baiti.
+- Kõik katsed kasutasid eraldi sünteetilisi andmeid. Kasutaja olemasolevat andmekausta ei muudetud. Tasulisi AI-päringuid, uusi tegelikke pangaimpordi katseid ega paigaldusviisardi läbimist ei tehtud; installer ja ühe EXE portable koostati sama kontrollitud rakendusega.
+
+English: 0.8.0 passed a clean npm installation, 187 unit/integration tests in 29 files, typecheck, lint, production build and all nine browser tests. Both dependency audits report zero known vulnerabilities, with the audit policy unchanged. Tests cover calendar-day terms, explicit deadlines, search/pagination/sorting, archive isolation and restoration, cross-page payment selection and persistent light/dark/system preferences. Initial browser fixture/locator failures were corrected without weakening validation. All tests used isolated synthetic data; no paid AI requests or real bank imports were made.
+
+The packaged Electron 44.10.0 application passed language/theme persistence and Windows DPAPI key checks. The final portable ZIP passed independent startup, payment-term calculation, approval-preserving archive/restore, all four banks' schema-validated exports and PDF text/rendering checks. Source and release privacy audits passed (153 and 2175 files respectively). The installer wizard was not run; existing user data was not used or modified.
+
 ## 0.7.4 kontroll – 22.10.2026
 
 - GitHubi Windowsi keskkonnas ületas esimene tegeliku PDF→PNG teisendamise test 20-sekundilise üldpiiri (29,2 s). Ainult selle integratsioonitesti piir tõsteti 60 sekundile; PNG sisu kontrollid ja programmi tööpiirid jäid samaks. Kohalik kordus läbis kõik selle faili 12 testi.
