@@ -1,5 +1,19 @@
 # Koodi- ja turvaülevaatus / Code and security review
 
+## minimatch'i turvateade / minimatch advisory — 03.11.2026
+
+Pärast 0.8.1 avaldamist ebaõnnestus GitHub Actionsi samm `npm run audit:dependencies`: 30.10.2026 avaldatud [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) (mõõdukas) puudutab `minimatch`-i versioone alla 11.0.1. Viga asub funktsioonis `firstPhasePreProcess()`. See käivitub ainult siis, kui kutsuja kasutab sätet `optimizationLevel >= 2` ja ründaja saab ise määrata glob-mustri. Kõik mõjutatud koopiad on arendus- ja ehitustööriistades (ESLint, electron-builder); tootmissõltuvuste audit oli ja jääb 0. Windowsi paketti `minimatch` ei kuulu.
+
+Parandus:
+
+1. Haavatavat koodi sisaldavad koopiad — `minimatch` 9.0.9 (`@electron/universal`) ja 10.2.6 (`app-builder-lib`, `@typescript-eslint/typescript-estree`) — suunatakse versioonipõhiste `overrides` reeglitega (`minimatch@^9.0.0`, `minimatch@^10.0.0`) parandatud versioonile **11.0.4**. Nende kasutajate nimeliste eksportide API on ühilduv.
+2. `minimatch` 3.1.5 (ESLint 9 ja selle pluginad, `glob` 7, `@electron/asar`, `dir-compare`) ja 5.1.9 (`filelist`) ei sisalda `optimizationLevel`/`firstPhasePreProcess` koodi; see lisandus versioonis 7. Neid ei saa üle viia versioonile 11, sest nende kasutajad kutsuvad mooduli vaikeeksporti funktsioonina ja v11 seda ei paku. Ülemvoolu ühilduvat parandust pole. `npm run audit:dependencies` aktsepteerib nüüd ainult täpselt seda teadet (URL ja raskusaste) ning ainult siis, kui iga märgitud `minimatch`-i koopia on arendussõltuvus ja versioon on alla 7. Versioon 9.x/10.x, tootmiskasutus või uus teade peatavad kontrolli endiselt.
+3. Auditi skript käsitles varem tsüklilisi sõltuvusi (nt `eslint` ↔ `@eslint-community/eslint-utils`, `app-builder-lib` ↔ `dmg-builder`) tundmatu ahelana. Tsükli korduvkülastus ei too uusi teateid, sest iga pakett hinnatakse eraldi. Uued testid kontrollivad nii aktsepteerimist kui ka blokeerimist.
+
+Kontrollid Windowsis, Node.js 24.16.0: `npm ci`, `npm test` (193 testi), `npm run typecheck`, `npm run lint`, `npm run build`, `npm audit --omit=dev` (0), `npm run audit:dependencies`, `node scripts/audit-source.mjs` — PASS. Uue `minimatch`-iga koostati ka Windowsi pakett (`desktop:pack`, sh paketi privaatsusaudit). `desktop:smoke` ja `desktop:local-smoke` läbisid. Avaldatud 0.8.1 paketid on muutumatud: muudatus puudutab ainult arendustööriistu ja programmi käitumine ei muutu.
+
+English: GHSA-g3hv-75wg-m249 (moderate) affects minimatch < 11.0.1 and is development-only here. Copies containing the vulnerable code (9.0.9, 10.2.6) are overridden to patched 11.0.4. The remaining 3.1.5/5.1.9 copies predate the vulnerable code path and cannot move to v11's API. The audit policy accepts only this advisory for development-only minimatch < 7, and handles dependency cycles correctly. The production audit remains zero; all CI checks, packaging and packaged smoke tests passed. Published 0.8.1 binaries are unaffected.
+
 ## 0.8.0 sõltuvuste uuendus / Dependency update — 28.10.2026
 
 Väljalaske kontroll leidis uusi turvateateid. Uuendused jäid olemasolevate põhiversioonide sisse: `electron` 44.6.0 → 44.10.0, `zod` 4.6.5 → 4.6.7, `fast-uri` 3.1.8 → 3.1.9 ning `undici` 6.29.0 → 6.29.1 ja 7.30.0 → 7.30.1. Electron on arendussõltuvuste loendis, kuid selle käituskeskkond kuulub Windowsi paketti. Next.js ja ESLinti konfiguratsioon jäävad versioonile 16.4.2.
