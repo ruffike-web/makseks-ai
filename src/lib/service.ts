@@ -378,6 +378,7 @@ export class InvoiceService {
         const trusted: Omit<SupplierData, "id"> = {
           name: i.supplierName!,
           registrationCode: i.supplierRegistrationCode,
+          defaultCurrency: existing?.defaultCurrency ?? null,
           trustedIbans: [
             ...new Set([...(existing?.trustedIbans ?? []), i.supplierIban!]),
           ],

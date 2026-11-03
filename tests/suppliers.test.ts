@@ -20,6 +20,18 @@ const supplier: SupplierData = {
   town: "Tartu",
   countryCode: "EE",
 };
+it("uses the supplier currency only when the invoice has none", () => {
+  const saved = { ...supplier, defaultCurrency: "EUR" };
+  expect(supplierValues(saved, blankInvoice()).currency).toBe("EUR");
+  expect(supplierValues(saved, { ...blankInvoice(), currency: "USD" }).currency).toBeNull();
+  expect(supplierValues(supplier, blankInvoice()).currency).toBeNull();
+});
+it("validates optional supplier currency and normalizes its code", () => {
+  expect(supplierSchema.parse({ ...supplier, defaultCurrency: " eur " }).defaultCurrency).toBe("EUR");
+  expect(supplierSchema.parse({ ...supplier, defaultCurrency: null }).defaultCurrency).toBeNull();
+  expect(supplierSchema.safeParse(supplier).success).toBe(true);
+  expect(supplierSchema.safeParse({ ...supplier, defaultCurrency: "EURO" }).success).toBe(false);
+});
 it("does not resolve a shared account or conflicting registration code automatically", () => {
   const invoice = {
     ...blankInvoice(),

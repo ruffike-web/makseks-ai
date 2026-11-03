@@ -6,9 +6,9 @@
 
 Download a package from the public [Releases page](https://github.com/ruffike-web/makseks-ai/releases):
 
-- **Fast portable (recommended):** extract all of `Makseks-AI-0.8.0-portable-kiire.zip`, then run `Makseks AI.exe`. Keep the entire folder together, including the `Makseks-AI.portable` marker. Do not launch the executable inside the ZIP viewer.
-- **Installer:** run `Makseks-AI-0.8.0-setup.exe`, choose an installation directory and launch the application from the Start menu.
-- **Single-file portable:** `Makseks-AI-0.8.0-portable.exe` extracts the application to a temporary directory on each launch and therefore starts more slowly.
+- **Fast portable (recommended):** extract all of `Makseks-AI-0.8.1-portable-kiire.zip`, then run `Makseks AI.exe`. Keep the entire folder together, including the `Makseks-AI.portable` marker. Do not launch the executable inside the ZIP viewer.
+- **Installer:** run `Makseks-AI-0.8.1-setup.exe`, choose an installation directory and launch the application from the Start menu.
+- **Single-file portable:** `Makseks-AI-0.8.1-portable.exe` extracts the application to a temporary directory on each launch and therefore starts more slowly.
 
 Windows x64 is required. The runtime and bank schemas are included. The executable is unsigned, so Windows SmartScreen may show an unknown-publisher notice.
 
@@ -121,6 +121,10 @@ Companies, invoices, suppliers and export history are imported. API keys are out
 - **AI error:** verify provider, model, key, company consent and account quota. Manual/local modes remain available.
 - **Database import rejected:** keep the source and current backups; do not replace `app.db` manually while the program is running.
 
+## Supplier default currency
+
+Choose **Suppliers → Edit supplier → Default currency** and save. New imports with no currency use this setting when the supplier is uniquely identified. A currency printed on the invoice is preserved. **Not set** disables the fallback. Use **Use saved supplier details** to fill a missing currency on an existing invoice. Payment-file export still supports EUR payments only.
+
 ## Developer checks and packaging
 
 Use Node.js 24 on Windows. See the overview for dependency installation and database setup. Run tests, typecheck, lint, production build, `npm audit --omit=dev` and `npm run audit:dependencies` before packaging. The full audit policy permits only the documented development-only braces advisory; new advisories fail the check.
@@ -130,10 +134,10 @@ Use Node.js 24 on Windows. See the overview for dependency installation and data
 For a fresh output folder when an old running executable locks the default one:
 
 ```powershell
-$env:ARVE_RELEASE_DIR='release/build-0.8.0'
+$env:ARVE_RELEASE_DIR='release/build-0.8.1'
 npm.cmd run build
 npm.cmd run desktop:stage
-npx.cmd electron-builder --config desktop/builder.cjs --config.directories.output=release/build-0.8.0 --win --x64 --publish never
+npx.cmd electron-builder --config desktop/builder.cjs --config.directories.output=release/build-0.8.1 --win --x64 --publish never
 node desktop/audit.mjs
 node desktop/fast-portable.mjs
 ```

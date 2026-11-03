@@ -83,6 +83,20 @@ export function SupplierEditor({
             )}
           </p>
           <div className="form-grid">
+            <label className="field">
+              <span>{t("Põhivaluuta")}</span>
+              <select
+                disabled={busy}
+                value={form.defaultCurrency ?? ""}
+                onChange={(e) => setForm({ ...form, defaultCurrency: e.target.value || null })}
+              >
+                <option value="">{t("Määramata")}</option>
+                {[...new Set(["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF", "PLN", "CAD", "AUD", "JPY", ...(form.defaultCurrency ? [form.defaultCurrency] : [])])].map((currency) => (
+                  <option key={currency} value={currency}>{currency}</option>
+                ))}
+              </select>
+              <small>{t("Kasutatakse siis, kui arvel puudub valuuta tähis.")}</small>
+            </label>
             {Object.entries(fields).map(([key, label]) => {
               const field = key as keyof typeof fields;
               return (

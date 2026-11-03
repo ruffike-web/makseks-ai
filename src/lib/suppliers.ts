@@ -16,6 +16,7 @@ const optional = (max: number) =>
 export const supplierSchema = z.object({
   name: z.string().trim().min(1).max(140),
   registrationCode: optional(35),
+  defaultCurrency: z.string().trim().toUpperCase().regex(/^[A-Z]{3}$/).nullable().optional(),
   trustedIbans: z
     .array(z.string().transform(normalizeIban).refine(validIban, "Vigane IBAN"))
     .min(1)
@@ -78,6 +79,7 @@ export function supplierValues(s: SupplierData, invoice: InvoiceData) {
   const accounts = [...new Set(s.trustedIbans)];
   const iban = invoice.supplierIban || (accounts.length === 1 ? accounts[0] : null);
   return {
+    currency: invoice.currency ? null : s.defaultCurrency ?? null,
     supplierName: s.name,
     supplierRegistrationCode: s.registrationCode,
     supplierAddress: s.address,

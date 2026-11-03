@@ -57,6 +57,16 @@ try {
     const item = (await api("state")).invoices.find((i) => i.data.invoiceNumber === "LOCAL-42");
     await api(`invoices/${item.id}/approve`, "POST", { version: item.version, reviewContext: item.reviewContext, reviewed: true, duplicate: true, accountChange: false, rememberSupplier: true });
   });
+  await page.reload();
+  await page.getByRole("button", { name: "Suppliers", exact: true }).click();
+  await page.getByRole("button", { name: "Edit supplier", exact: true }).click();
+  await expect(page.getByLabel("Default currency", { exact: false })).toHaveValue("");
+  await page.getByLabel("Default currency", { exact: false }).selectOption("EUR");
+  await page.getByRole("button", { name: "Save supplier", exact: true }).click();
+  await expect(page.getByRole("dialog")).not.toBeVisible();
+  await page.getByRole("button", { name: "Edit supplier", exact: true }).click();
+  await expect(page.getByLabel("Default currency", { exact: false })).toHaveValue("EUR");
+  await page.getByRole("button", { name: "Close", exact: true }).click();
   await page.getByRole("button", { name: "Invoice import", exact: true }).click();
   await page.getByLabel("Data reading").selectOption("local");
   await page.locator('input[type="file"]').setInputFiles({ name: "saved-supplier.pdf", mimeType: "application/pdf", buffer: invoicePdf(["Supplier: Offline Example Ltd", "Invoice no: SAVED-2", "Amount due: EUR 15.00"]) });
@@ -67,6 +77,16 @@ try {
   expect(saved.provenance.supplierIban).toBe("supplier");
   expect(saved.originalData.supplierIban).toBeNull();
   expect(saved.approvedAt).toBeNull();
+  await page.getByRole("button", { name: "Close invoice", exact: true }).click();
+  await page.getByRole("button", { name: "Invoice import", exact: true }).click();
+  await page.locator('input[type="file"]').setInputFiles({ name: "currency-fallback.pdf", mimeType: "application/pdf", buffer: invoicePdf(["Supplier: Offline Example Ltd", "Invoice no: CURRENCY-3", "Amount due: 15.00"]) });
+  await page.getByRole("row").filter({ hasText: "CURRENCY-3" }).getByRole("button", { name: "Review", exact: false }).click();
+  await expect(page.getByRole("textbox", { name: /^Currency/ })).toHaveValue("EUR");
+  const currencyState = await page.evaluate(async () => (await fetch("/api/state", { headers: { "X-Company-Id": "default" } })).json());
+  const currencyInvoice = currencyState.invoices.find((i) => i.data.invoiceNumber === "CURRENCY-3");
+  expect(currencyInvoice.originalData.currency).toBeNull();
+  expect(currencyInvoice.provenance.currency).toBe("supplier");
+  console.log("Supplier default currency UI persistence and local PDF fallback PASS.");
   console.log("Saved supplier IBAN inheritance on a name-only local PDF PASS.");
   console.log("Local PDF reading PASS: no API key, payment fields, remaining amount, review required, persisted account choice, manual override and English selector.");
 } finally { await application.close(); }

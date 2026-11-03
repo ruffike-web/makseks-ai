@@ -67,6 +67,27 @@ afterAll(async () => {
   rmSync(temp, { recursive: true, force: true });
 });
 describe("persistent approval boundary", () => {
+  it("persists supplier currency, fills missing import currency and preserves printed currency", async () => {
+    const first = await service.createInvoice(data, { name: "manual", method: "manual" });
+    await approve(first.id, 0, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: true });
+    const supplier = (await service.state()).suppliers[0];
+    await service.updateSupplier(supplier.id, { ...supplier, defaultCurrency: "EUR" });
+    expect((await service.state()).suppliers[0].defaultCurrency).toBe("EUR");
+    const missing = await service.createInvoice({ ...data, invoiceNumber: "MISSING", currency: null }, { name: "missing.pdf", method: "local" });
+    expect(JSON.parse(missing.data).currency).toBe("EUR");
+    expect(JSON.parse(missing.originalData).currency).toBeNull();
+    expect(JSON.parse(missing.provenance).currency).toBe("supplier");
+    const printed = await service.createInvoice({ ...data, invoiceNumber: "PRINTED", currency: "USD" }, { name: "printed.pdf", method: "local" });
+    expect(JSON.parse(printed.data).currency).toBe("USD");
+    expect(JSON.parse(printed.provenance).currency).toBe("invoice");
+    await service.applySupplier(printed.id, 0);
+    expect((await service.state()).invoices.find((i) => i.id === printed.id)!.data.currency).toBe("USD");
+    await approve(missing.id, 0, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: true });
+    expect((await service.state()).suppliers[0].defaultCurrency).toBe("EUR");
+    await service.updateSupplier(supplier.id, { ...supplier, defaultCurrency: null });
+    const unset = await service.createInvoice({ ...data, invoiceNumber: "UNSET", currency: null }, { name: "unset.pdf", method: "local" });
+    expect(JSON.parse(unset.data).currency).toBeNull();
+  });
   it("archives and restores an invoice without losing its content or review history", async () => {
     const row = await service.createInvoice(data, { name: "archive.pdf", hash: "archive-source", method: "manual" });
     await approve(row.id, 0, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: true });

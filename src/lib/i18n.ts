@@ -1,6 +1,9 @@
 // UI copy is keyed by its original Estonian text. User-entered data is never passed here.
 export type Language = "et" | "en";
 const entries = `
+Põhivaluuta|Default currency
+Määramata|Not set
+Kasutatakse siis, kui arvel puudub valuuta tähis.|Used when the invoice does not specify a currency.
 Välimus ja keel|Appearance and language
 Kujundus|Appearance
 Hele|Light

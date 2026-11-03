@@ -21,13 +21,13 @@ Makseks AI on Windowsi rakendus ostuarvete kontrollimiseks ja pankade maksefaili
 
 ## Windowsi programmi kasutamine
 
-Versiooni **0.8.0** failid asuvad [Releases](https://github.com/ruffike-web/makseks-ai/releases) lehel ja on avalikult allalaaditavad.
+Versiooni **0.8.1** failid asuvad [Releases](https://github.com/ruffike-web/makseks-ai/releases) lehel ja on avalikult allalaaditavad.
 
 | Pakett | Kasutus |
 | --- | --- |
-| `Makseks-AI-0.8.0-portable-kiire.zip` | Soovitatav portable. Paki kogu ZIP üks kord lahti ja käivita `Makseks AI.exe`. |
-| `Makseks-AI-0.8.0-setup.exe` | Paigaldusviisard ja käivitamine Start-menüüst. |
-| `Makseks-AI-0.8.0-portable.exe` | Üks fail, mis pakib sisu igal käivitusel ajutisse kausta; avaneb aeglasemalt. |
+| `Makseks-AI-0.8.1-portable-kiire.zip` | Soovitatav portable. Paki kogu ZIP üks kord lahti ja käivita `Makseks AI.exe`. |
+| `Makseks-AI-0.8.1-setup.exe` | Paigaldusviisard ja käivitamine Start-menüüst. |
+| `Makseks-AI-0.8.1-portable.exe` | Üks fail, mis pakib sisu igal käivitusel ajutisse kausta; avaneb aeglasemalt. |
 
 Paketid on Windows x64 jaoks. Node.js-i või terminali eraldi vaja ei ole. EXE-d on allkirjastamata ja Windows võib küsida käivituse kinnitust. Kontrollsummad on väljalaske failis `SHA256SUMS.txt`.
 

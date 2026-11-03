@@ -4,9 +4,9 @@
 
 ## Käivitamine
 
-- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.8.0-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
-- **Paigaldatav:** käivita `release/Makseks-AI-0.8.0-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
-- **Ühe EXE portable:** `release/Makseks-AI-0.8.0-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
+- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.8.1-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
+- **Paigaldatav:** käivita `release/Makseks-AI-0.8.1-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
+- **Ühe EXE portable:** `release/Makseks-AI-0.8.1-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
 
 Paketid on Windows x64 jaoks. Node.js, kohalik server ja pangaskeemid on kaasas. Käsitsi sisestamine, kontroll ja maksefailide loomine töötavad internetita; AI vajab internetti. Programm ei algata makseid. EXE on allkirjastamata: Windows SmartScreen võib kuvada tundmatu avaldaja teate.
 
@@ -42,6 +42,10 @@ Kui arve nimi ja konto viitavad eri salvestatud tarnijatele, tuleb vastuolu enne
 Tarnija üheselt kattuva konto, registrikoodi või nime puhul kasutatakse aktiivse ettevõtte tarnijaregistris salvestatud andmeid: nime, registrikoodi, aadressivälju ning sobiva konto BIC-i. Puuduv IBAN täidetakse, kui tarnijal on üks salvestatud konto. Mitme salvestatud konto korral kuvatakse kontovalikud; arvelt juba loetud erinev IBAN jääb kontrollimiseks alles. Juba imporditud arvele saab andmed lisada nupuga **Kasuta salvestatud tarnijaandmeid**. Mitmetähenduslikud väärtused jäävad tühjaks. Programm ei arvuta tasutud osa maha ega vali ise mitme konto vahel. Kõik leitud makseandmed tuleb üle kontrollida ja arve kinnitada.
 
 Pildid ja skannitud PDF-id vajavad käsitsi sisestamist või AI-lugemist; kohalik OCR ei kuulu sellesse versiooni. Ka keerulise paigutuse või tundmatute väljade nimetustega tekstiga PDF võib vajada käsitsi täitmist. Kohalik lugeja töötleb kuni 20-leheküljelisi, kuni 100 000 tekstimärgiga PDF-e; suurema dokumendi puhul jääb käsitsi kontroll alles. Ainult võrdluseks faili importimiseks vali **Käsitsi sisestamine**. AI kasutamiseks vali impordivaates **AI lugemine**; selleks peavad seadetes olema võti ja aktiivse ettevõtte nõusolek.
+
+## Tarnija põhivaluuta
+
+Vali **Tarnijad → Muuda tarnijat → Põhivaluuta** ja salvesta. Kui uuel imporditud arvel valuuta puudub ning tarnija tuvastatakse üheselt, kasutatakse seda valuutat. Arvel märgitud valuutat ei muudeta. **Määramata** lülitab automaatse täitmise välja. Olemasolevale arvele saab puuduva valuuta lisada nupuga **Kasuta salvestatud tarnijaandmeid**. Maksefailide eksport toetab endiselt ainult EUR-makseid.
 
 ## Maksetähtaeg päevades
 
