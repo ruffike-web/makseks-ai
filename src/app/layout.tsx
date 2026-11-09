@@ -9,7 +9,7 @@ import "@fontsource/manrope/700.css";
 import "@fontsource/manrope/800.css";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "Makseks AI · SEB & LHV",
+  title: "Makseks AI",
   description: "Ostuarvete kontroll ja panga maksefailid",
 };
 export default function RootLayout({

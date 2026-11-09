@@ -321,6 +321,7 @@ Saaja konto riik jääb selle rakenduse SEPA ulatusest välja.|The recipient acc
 Summa peab olema positiivne, kuni kahe komakohaga ja kuni 999 999 999,99 EUR.|The amount must be positive, with up to two decimal places, and no more than EUR 999,999,999.99.
 Toetatud on ainult EUR-maksed.|Only EUR payments are supported.
 Viitenumber ei läbi 7-3-1 kontrolli (2–20 numbrit). Paranda või eemalda see teadlikult.|The reference number fails the 7-3-1 check (2–20 digits). Correct it or deliberately remove it.
+Viitenumber ei ole 7-3-1 vormingus. Välismaksel saadetakse see makse selgituses vabatekstina.|The reference number is not in 7-3-1 format. For a foreign payment it is sent as free text in the payment description.
 Saaja BIC on vigane.|Recipient BIC is invalid.
 Makse kuupäev puudub või on minevikus. Kontrolli maksetähtpäeva ja kuupäeva seadeid.|The payment date is missing or in the past. Check the due date and date settings.
 Riigikood peab sisaldama kahte suurtähte.|The country code must contain two uppercase letters.

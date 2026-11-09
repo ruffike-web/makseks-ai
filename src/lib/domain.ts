@@ -147,6 +147,18 @@ export function validateReference(value: string): boolean {
     .reduce((s, c, i) => s + Number(c) * [7, 3, 1][i % 3], 0);
   return (10 - (sum % 10)) % 10 === Number(ref.at(-1));
 }
+/**
+ * A foreign creditor's own numeric reference (e.g. a MOD-97 invoice reference
+ * on a Finnish account) that is not a 7-3-1 creditor reference. It cannot be
+ * sent as a structured SCOR reference, so it travels as free text in Ustrd.
+ * Estonian accounts keep the strict 7-3-1 rule.
+ */
+export function freeTextReference(i: Pick<InvoiceData, "referenceNumber" | "supplierIban">): string | null {
+  const ref = (i.referenceNumber ?? "").replace(/\s/g, "");
+  const iban = normalizeIban(i.supplierIban ?? "");
+  if (!ref || validateReference(ref) || !/^\d{2,35}$/.test(ref)) return null;
+  return /^[A-Z]{2}/.test(iban) && !iban.startsWith("EE") ? ref : null;
+}
 export function parseCents(value: string | null | undefined): bigint | null {
   const s = (value ?? "")
     .trim()
@@ -345,7 +357,15 @@ export function evaluateInvoice(
     );
   if (i.currency && i.currency !== "EUR")
     add("CURRENCY", "Toetatud on ainult EUR-maksed.", "error", "currency");
-  if (i.referenceNumber && !validateReference(i.referenceNumber))
+  const textReference = freeTextReference(i);
+  if (textReference)
+    add(
+      "REFERENCE_TEXT",
+      "Viitenumber ei ole 7-3-1 vormingus. Välismaksel saadetakse see makse selgituses vabatekstina.",
+      "warning",
+      "referenceNumber",
+    );
+  else if (i.referenceNumber && !validateReference(i.referenceNumber))
     add(
       "REFERENCE",
       "Viitenumber ei läbi 7-3-1 kontrolli (2–20 numbrit). Paranda või eemalda see teadlikult.",
@@ -427,7 +447,9 @@ export function evaluateInvoice(
         "supplierCountryCode",
       );
   }
-  const description = descriptionFor(i, s);
+  const description = textReference
+    ? `Ref ${textReference}, ${descriptionFor(i, s)}`
+    : descriptionFor(i, s);
   const remittanceLimit =
     bankProfiles[s.preferredBank].xml.domesticRemittanceMaxLength;
   if (
@@ -531,7 +553,8 @@ export function toPayment(
     currency: "EUR",
     invoiceNumber: n.invoiceNumber!,
     customerNumber: n.customerNumber,
-    referenceNumber: n.referenceNumber,
+    // A free-text reference is already part of the description (Ustrd).
+    referenceNumber: freeTextReference(n) ? null : n.referenceNumber,
     description: result.description,
     executionDate: result.executionDate!,
   };

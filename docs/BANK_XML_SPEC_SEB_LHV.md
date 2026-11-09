@@ -169,6 +169,7 @@ Golden file: `LHV_golden_reference_pain001_001_09.xml`
 - Validate digits and Estonian 7-3-1 check digit where it is an Estonian domestic reference.
 - Use structured reference (`SCOR`).
 - Keep invoice/customer text in structured additional remittance information only if adapter/import tests confirm desired behavior.
+- A numeric reference that fails 7-3-1 on a non-Estonian IBAN (e.g. a creditor's own MOD-97 reference on a Finnish account) is not sent as `SCOR`. It is prefixed to the description as `Ref <number>, …` and exported in `Ustrd`, with a non-blocking warning. Estonian IBANs keep the strict 7-3-1 error.
 
 ### No reference number
 
