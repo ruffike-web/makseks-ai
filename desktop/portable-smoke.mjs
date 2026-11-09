@@ -22,7 +22,7 @@ if (fast) {
     resolve("node_modules/electron-winstaller/vendor/7z.exe"),
     [
       "x",
-      resolve(`release/Makseks-AI-${version}-portable-kiire.zip`),
+      resolve(process.env.ARVE_RELEASE_DIR || "release", `Makseks-AI-${version}-portable-kiire.zip`),
       `-o${directory}`,
       "-y",
     ],
@@ -37,7 +37,7 @@ if (fast) {
   console.log(rendered.trim());
 } else
   await copyFile(
-    resolve(`release/Makseks-AI-${version}-portable.exe`),
+    resolve(process.env.ARVE_RELEASE_DIR || "release", `Makseks-AI-${version}-portable.exe`),
     executable,
   );
 const port = await new Promise((resolve, reject) => {

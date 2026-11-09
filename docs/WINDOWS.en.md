@@ -6,9 +6,9 @@
 
 Download a package from the public [Releases page](https://github.com/ruffike-web/makseks-ai/releases):
 
-- **Fast portable (recommended):** extract all of `Makseks-AI-0.8.1-portable-kiire.zip`, then run `Makseks AI.exe`. Keep the entire folder together, including the `Makseks-AI.portable` marker. Do not launch the executable inside the ZIP viewer.
-- **Installer:** run `Makseks-AI-0.8.1-setup.exe`, choose an installation directory and launch the application from the Start menu.
-- **Single-file portable:** `Makseks-AI-0.8.1-portable.exe` extracts the application to a temporary directory on each launch and therefore starts more slowly.
+- **Fast portable (recommended):** extract all of `Makseks-AI-0.8.2-portable-kiire.zip`, then run `Makseks AI.exe`. Keep the entire folder together, including the `Makseks-AI.portable` marker. Do not launch the executable inside the ZIP viewer.
+- **Installer:** run `Makseks-AI-0.8.2-setup.exe`, choose an installation directory and launch the application from the Start menu.
+- **Single-file portable:** `Makseks-AI-0.8.2-portable.exe` extracts the application to a temporary directory on each launch and therefore starts more slowly.
 
 Windows x64 is required. The runtime and bank schemas are included. The executable is unsigned, so Windows SmartScreen may show an unknown-publisher notice.
 
@@ -86,6 +86,10 @@ Import the XML into the correct company's internet banking. Recheck recipient ac
 
 Supported profiles are SEB, LHV, Coop Pank and Swedbank (formerly Hansapank). All four have local schema validation. The user has confirmed successful real internet-bank imports of `pain.001.001.09` XML payment files at both SEB and LHV. Actual Coop Pank and Swedbank imports remain unverified. This user confirmation is not official bank certification or a guarantee of acceptance for every payment scenario; review payment details in the bank as well. Only supported EUR supplier payments are generated. Re-exporting an invoice requires explicit duplicate acknowledgement. See the [import status and verification scope](bank-specs/README.md#praegune-impordistaatus).
 
+### Foreign supplier references
+
+For an Estonian account the reference must pass the 7-3-1 check; otherwise the invoice is marked invalid and cannot be exported. When a foreign supplier (e.g. with a Finnish account) uses its own reference that fails 7-3-1, it is sent as free text in the payment description, e.g. `Ref 12345678901234567890, Arve 1001`. A yellow warning is shown, but the invoice stays exportable. Check that the description matches what the invoice requires.
+
 ## Configure AI
 
 Open **Settings → AI connection**. Select a provider, choose or type a model ID and enter that provider's API key. **Check key and load models** refreshes the available catalog without sending an invoice. Save AI settings, then enable AI reading for the active company. Changing provider disables existing AI consent until enabled again for that provider.
@@ -127,17 +131,17 @@ Choose **Suppliers → Edit supplier → Default currency** and save. New import
 
 ## Developer checks and packaging
 
-Use Node.js 24 on Windows. See the overview for dependency installation and database setup. Run tests, typecheck, lint, production build, `npm audit --omit=dev` and `npm run audit:dependencies` before packaging. The full audit policy permits only the documented development-only braces advisory; new advisories fail the check.
+Use Node.js 24 on Windows. See the overview for dependency installation and database setup. Run tests, typecheck, lint, production build, `npm audit --omit=dev` and `npm run audit:dependencies` before packaging. The full audit policy permits only the advisories documented in `docs/SECURITY_REVIEW.md` for development-only packages; new advisories fail the check.
 
 `npm.cmd run desktop:pack` creates installer, single-file portable and fast ZIP packages and audits their contents. `desktop:key-smoke` verifies actual Windows key encryption, migration and recovery; `desktop:smoke` checks the packaged workflow; `desktop:language-smoke` checks language persistence; `desktop:local-smoke` checks local extraction and saved-supplier inheritance; `desktop:portable-smoke -- --fast` checks the ZIP outside the project and all four bank XML profiles. Tests use separate data folders.
 
 For a fresh output folder when an old running executable locks the default one:
 
 ```powershell
-$env:ARVE_RELEASE_DIR='release/build-0.8.1'
+$env:ARVE_RELEASE_DIR='release/build-0.8.2'
 npm.cmd run build
 npm.cmd run desktop:stage
-npx.cmd electron-builder --config desktop/builder.cjs --config.directories.output=release/build-0.8.1 --win --x64 --publish never
+npx.cmd electron-builder --config desktop/builder.cjs --config.directories.output=release/build-0.8.2 --win --x64 --publish never
 node desktop/audit.mjs
 node desktop/fast-portable.mjs
 ```

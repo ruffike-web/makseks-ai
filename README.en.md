@@ -21,13 +21,13 @@ Makseks AI is a Windows application for reviewing purchase invoices and preparin
 
 ## Windows downloads
 
-Version **0.8.1** is publicly available from the [Releases](https://github.com/ruffike-web/makseks-ai/releases) page.
+Version **0.8.2** is publicly available from the [Releases](https://github.com/ruffike-web/makseks-ai/releases) page.
 
 | Package | Use |
 | --- | --- |
-| `Makseks-AI-0.8.1-portable-kiire.zip` | Recommended portable version. Extract the whole ZIP once and run `Makseks AI.exe`. |
-| `Makseks-AI-0.8.1-setup.exe` | Installer; launch the application from the Start menu. |
-| `Makseks-AI-0.8.1-portable.exe` | Single file that extracts itself on every launch; starts more slowly. |
+| `Makseks-AI-0.8.2-portable-kiire.zip` | Recommended portable version. Extract the whole ZIP once and run `Makseks AI.exe`. |
+| `Makseks-AI-0.8.2-setup.exe` | Installer; launch the application from the Start menu. |
+| `Makseks-AI-0.8.2-portable.exe` | Single file that extracts itself on every launch; starts more slowly. |
 
 Packages target Windows x64 and include their own runtime. No separate Node.js installation or terminal is needed. Executables are unsigned, so Windows may ask for confirmation. Release checksums are provided in `SHA256SUMS.txt`.
 

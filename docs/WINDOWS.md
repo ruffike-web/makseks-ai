@@ -4,9 +4,9 @@
 
 ## Käivitamine
 
-- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.8.1-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
-- **Paigaldatav:** käivita `release/Makseks-AI-0.8.1-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
-- **Ühe EXE portable:** `release/Makseks-AI-0.8.1-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
+- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.8.2-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
+- **Paigaldatav:** käivita `release/Makseks-AI-0.8.2-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
+- **Ühe EXE portable:** `release/Makseks-AI-0.8.2-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
 
 Paketid on Windows x64 jaoks. Node.js, kohalik server ja pangaskeemid on kaasas. Käsitsi sisestamine, kontroll ja maksefailide loomine töötavad internetita; AI vajab internetti. Programm ei algata makseid. EXE on allkirjastamata: Windows SmartScreen võib kuvada tundmatu avaldaja teate.
 
@@ -84,6 +84,10 @@ Teenusepakkuja ja mudel on kõigil ettevõtetel ühised; iga teenuse võti säil
 ## Pangad
 
 Valikus on SEB, LHV, Coop Pank ja Swedbank (endine Hansapank). Kõigi maksefailidele tehakse kaasapandud skeemidega kohalik XSD kontroll. Kasutaja on kinnitanud, et nii SEB kui ka LHV `pain.001.001.09` XML-maksefailide tegelik import internetipanka õnnestus. Coop Panga ja Swedbanki tegelik import on endiselt kontrollimata. See kasutajakinnitus ei ole ametlik pangapoolne sertifitseerimine ega taga iga võimaliku maksejuhtumi aktsepteerimist; kontrolli makseandmed ka pangas üle. Rakendus toetab EUR tarnijamakseid. Täpsem [impordistaatus ja kontrolli ulatus](bank-specs/README.md#praegune-impordistaatus).
+
+### Välismaise tarnija viitenumber
+
+Eesti kontole makstes peab viitenumber läbima 7-3-1 kontrolli; vastasel juhul on arve punane ja seda ei ekspordita. Kui välismaine tarnija (nt Soome kontoga) kasutab oma viitenumbrit, mis 7-3-1 kontrolli ei läbi, saadetakse see makse selgituses vabatekstina, nt `Ref 12345678901234567890, Arve 1001`. Väljal kuvatakse kollane hoiatus, kuid arve jääb eksporditavaks. Kontrolli, et selgitus vastab arvel nõutule.
 
 ## Andmed ja varundamine
 
