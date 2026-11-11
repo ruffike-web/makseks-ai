@@ -1,6 +1,6 @@
 {
   "name": "arve-makseks",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -37,7 +38,7 @@
     "@prisma/client": "7.10.0",
     "@tabler/icons-react": "^3.0.0",
     "dotenv": "^17.0.0",
-    "fast-xml-parser": "^5.0.0",
+    "fast-xml-parser": "^5.12.0",
     "ibantools": "^4.5.0",
     "libxml2-wasm": "0.7.2",
     "next": "16.4.2",

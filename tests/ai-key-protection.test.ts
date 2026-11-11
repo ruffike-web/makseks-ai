@@ -85,13 +85,13 @@ it("fails closed when encryption fails without overwriting the existing file", a
   await saveAIConfig({ model: "gemini-test", apiKey: "original-key" });
   const before = readFileSync(file, "utf8");
   unavailable = true;
-  await expect(saveAIConfig({ model: "gemini-test", apiKey: "new-key" })).rejects.toThrow();
+  await expect(saveAIConfig({ model: "gemini-test", apiKey: "new-key" })).rejects.toThrow("API-võtme turvaline salvestamine ebaõnnestus.");
   expect(readFileSync(file, "utf8")).toBe(before);
   expect(readdirSync(directory)).toEqual(["ai-config.json"]);
 });
 
 it("never falls back to plaintext if the desktop protection channel is absent", async () => {
   process.send = undefined;
-  await expect(saveAIConfig({ model: "gemini-test", apiKey: "must-not-leak" })).rejects.toThrow();
+  await expect(saveAIConfig({ model: "gemini-test", apiKey: "must-not-leak" })).rejects.toThrow("API-võtme turvaline salvestamine ebaõnnestus.");
   expect(readdirSync(directory)).toEqual([]);
 });

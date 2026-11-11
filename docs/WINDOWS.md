@@ -4,9 +4,9 @@
 
 ## Käivitamine
 
-- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.8.2-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
-- **Paigaldatav:** käivita `release/Makseks-AI-0.8.2-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
-- **Ühe EXE portable:** `release/Makseks-AI-0.8.2-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
+- **Kiire portable (soovitatav):** paki `release/Makseks-AI-0.8.3-portable-kiire.zip` täielikult lahti ja käivita kaustast `Makseks AI.exe`. Edaspidi pole vaja programmi uuesti lahti pakkida. Hoia kõik failid koos, sealhulgas `Makseks-AI.portable`.
+- **Paigaldatav:** käivita `release/Makseks-AI-0.8.3-setup.exe` ja vali paigalduskaust. Edaspidi ava Makseks AI Start-menüüst.
+- **Ühe EXE portable:** `release/Makseks-AI-0.8.3-portable.exe` pakib programmi igal käivitusel ajutisse kausta ning on seetõttu aeglasem. Kiiremaks käivituseks kasuta ZIP-versiooni või installerit.
 
 Paketid on Windows x64 jaoks. Node.js, kohalik server ja pangaskeemid on kaasas. Käsitsi sisestamine, kontroll ja maksefailide loomine töötavad internetita; AI vajab internetti. Programm ei algata makseid. EXE on allkirjastamata: Windows SmartScreen võib kuvada tundmatu avaldaja teate.
 

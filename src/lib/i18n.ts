@@ -361,6 +361,9 @@ Kinnitatud tarnijaandmed puuduvad.|Verified supplier details are missing.
 Arve on vahepeal muutunud. Värskenda vaadet.|The invoice has changed. Refresh the view.
 Kinnita, et kontrollisid andmeid algdokumendilt.|Confirm that you checked the details against the original document.
 Arvet ei leitud.|Invoice not found.
+Päringu andmed on vigased. Värskenda lehte ja proovi uuesti.|The request data is invalid. Refresh the page and try again.
+Päringu töötlemine ebaõnnestus. Värskenda lehte ja proovi uuesti.|The request could not be processed. Refresh the page and try again.
+Rakendus saatis vigase vastuse. Värskenda lehte ja proovi uuesti.|The application sent an invalid response. Refresh the page and try again.
 Makse seaded või kuupäev on vahepeal muutunud. Sulge arve, värskenda lehte ja kontrolli makseandmed uuesti.|The payment settings or date have changed. Close the invoice, refresh the page and review the payment details again.
 Vali 1–500 erinevat kinnitatud arvet.|Select 1–500 distinct approved invoices.
 Valitud arvet ei leitud.|Selected invoice not found.
@@ -393,6 +396,7 @@ export function translate(language: Language, source: string, values?: Record<st
 }
 
 const messagePatterns: Array<[RegExp, (...values: string[]) => string]> = [
+  [/^Päring ebaõnnestus \((\d{3})\)\./, (status) => `Request failed (${status}).`],
   [/^(.+?) puudub\./, (field) => `${translate("en", field)} is missing.`],
   [
     /^(.+?) ei ole kehtiv kuupäev\./,

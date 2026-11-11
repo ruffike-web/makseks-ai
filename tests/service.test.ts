@@ -98,10 +98,10 @@ describe("persistent approval boundary", () => {
     expect(archived.archivedInvoices).toHaveLength(1);
     expect(archived.archivedInvoices[0]).toMatchObject({ data: before.data, originalData: before.originalData, provenance: before.provenance, version: before.version, approvedAt: before.approvedAt, sourceFileHash: "archive-source" });
     expect(archived.archivedInvoices[0].archivedAt).toBeTruthy();
-    await expect(service.updateInvoice(row.id, before.version, { ...data, amountDue: "99.00" })).rejects.toThrow();
-    await expect(service.applySupplier(row.id, before.version)).rejects.toThrow();
-    await expect(service.approve(row.id, before.version, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: false, reviewContext: before.reviewContext })).rejects.toThrow();
-    await expect(service.exportInvoices([row.id])).rejects.toThrow();
+    await expect(service.updateInvoice(row.id, before.version, { ...data, amountDue: "99.00" })).rejects.toThrow("Taasta arve enne muutmist");
+    await expect(service.applySupplier(row.id, before.version)).rejects.toThrow("Taasta arve enne muutmist");
+    await expect(service.approve(row.id, before.version, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: false, reviewContext: before.reviewContext })).rejects.toThrow("Taasta arve enne muutmist");
+    await expect(service.exportInvoices([row.id])).rejects.toThrow("Valitud arvet ei leitud.");
     expect(await db.exportRecord.count()).toBe(0);
     await service.restoreInvoice(row.id, before.version);
     const restored = await service.state();
@@ -226,7 +226,9 @@ describe("persistent approval boundary", () => {
     await expect(
       other.updateInvoice(row.id, first.version, data),
     ).rejects.toThrow();
-    await expect(other.deleteInvoice(row.id)).rejects.toThrow();
+    await expect(other.deleteInvoice(row.id, first.version)).rejects.toThrow(
+      "Arve on vahepeal muutunud",
+    );
     await expect(other.applySupplier(row.id, first.version)).rejects.toThrow();
     await expect(
       other.approve(row.id, first.version, {
@@ -389,6 +391,26 @@ describe("persistent approval boundary", () => {
       }),
     ).rejects.toThrow();
   });
+  it("rejects deleting an invoice that changed after it was displayed", async () => {
+    const i = await service.createInvoice(data, { name: "a.pdf", method: "manual" });
+    await service.updateInvoice(i.id, 0, { ...data, invoiceNumber: "INV-2" });
+    await expect(service.deleteInvoice(i.id, 0)).rejects.toThrow("Arve on vahepeal muutunud");
+    expect((await service.state()).invoices).toHaveLength(1);
+    await service.deleteInvoice(i.id, 1);
+    expect((await service.state()).invoices).toHaveLength(0);
+  });
+  it("keeps a saved registration code when remembering a supplier from an invoice without one", async () => {
+    const first = await service.createInvoice(data, { name: "a.pdf", method: "manual" });
+    await approve(first.id, 0, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: true });
+    const second = await service.createInvoice(
+      { ...data, supplierRegistrationCode: null, invoiceNumber: "INV-2", amountDue: "20.00" },
+      { name: "b.pdf", method: "manual" },
+    );
+    await approve(second.id, 0, { reviewed: true, duplicate: false, accountChange: false, rememberSupplier: true });
+    const suppliers = (await service.state()).suppliers;
+    expect(suppliers).toHaveLength(1);
+    expect(suppliers[0].registrationCode).toBe("12345678");
+  });
   it("preserves duplicate protection after deleting an exported invoice", async () => {
     const i = await service.createInvoice(data, {
       name: "a.pdf",
@@ -402,7 +424,11 @@ describe("persistent approval boundary", () => {
       rememberSupplier: false,
     });
     await service.exportInvoices([i.id]);
-    await service.deleteInvoice(i.id);
+    const exported = (await service.state()).invoices.find((x) => x.id === i.id)!;
+    await service.deleteInvoice(i.id, exported.version);
+    const archived = (await service.state()).archivedInvoices.find((x) => x.id === i.id)!;
+    expect(archived.archivedAt).not.toBeNull();
+    expect(archived.status).toBe("EXPORTED");
     const copy = await service.createInvoice(data, {
       name: "a-copy.pdf",
       hash: "filehash",

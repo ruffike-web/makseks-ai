@@ -6,12 +6,22 @@ import { DatabaseSync } from "node:sqlite";
 import { expect, it } from "vitest";
 
 const require = createRequire(import.meta.url);
-const { migrate, importDatabase } = require("../desktop/bootstrap.cjs");
+const { migrate, importDatabase, requiredColumns } = require("../desktop/bootstrap.cjs");
 const migrations = resolve("prisma/migrations");
+
+it("derives the required import schema from every bundled migration", () => {
+  const required = requiredColumns(migrations) as Record<string, string[]>;
+  expect(Object.keys(required).sort()).toEqual(["ExportRecord", "Invoice", "Settings", "Supplier"]);
+  expect(required.Invoice).toEqual(expect.arrayContaining(["companyId", "archivedAt", "exportedVersion", "accountCandidates"]));
+  expect(required.ExportRecord).toEqual(expect.arrayContaining(["fingerprints", "companyId"]));
+});
 
 it.each([
   ["Settings", "data"],
   ["Invoice", "accountCandidates"],
+  ["Invoice", "archivedAt"],
+  ["Supplier", "data"],
+  ["ExportRecord", "fingerprints"],
 ])("rejects an imported database missing %s.%s without replacing current data", async (table, column) => {
   const directory = mkdtempSync(join(tmpdir(), "arve-import-schema-"));
   const source = join(directory, "source.db");
@@ -27,7 +37,9 @@ it.each([
   incoming.exec(`ALTER TABLE "${table}" DROP COLUMN "${column}"`);
   incoming.close();
 
-  await expect(importDatabase(source, target, migrations)).rejects.toThrow();
+  await expect(importDatabase(source, target, migrations)).rejects.toThrow(
+    "Imporditava andmebaasi struktuur ei sobi selle rakendusega.",
+  );
 
   const preserved = new DatabaseSync(target, { readOnly: true });
   try {

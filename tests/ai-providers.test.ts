@@ -1,3 +1,4 @@
+import { ZodError } from "zod";
 import { afterEach, expect, it, vi } from "vitest";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -78,6 +79,8 @@ for (const provider of ["openai", "anthropic"] as const)
       );
       expect(JSON.stringify(init.headers)).toContain(`${provider}-secret`);
       expect(JSON.stringify(init)).not.toContain("gemini-secret");
+      expect(init.redirect).toBe("error");
+      expect(init.signal).toBeInstanceOf(AbortSignal);
       const body = JSON.parse(init.body);
       if (provider === "openai") {
         expect(body.store).toBe(false);
@@ -87,10 +90,13 @@ for (const provider of ["openai", "anthropic"] as const)
         expect(body.text.format.strict).toBe(true);
         expect(body.text.format.schema.required).toContain("paymentTermDays");
         expect(body.text.format.schema.properties.paymentTermDays).not.toHaveProperty("default");
-      } else
+      } else {
         expect(body.messages[0].content[0].type).toBe(
           mime === "application/pdf" ? "document" : "image",
         );
+        expect(body.tool_choice).toEqual({ type: "auto" });
+        expect(body.tools.map((tool: { name: string }) => tool.name)).toEqual(["invoice_fields"]);
+      }
     });
   }
 it("rejects incomplete OpenAI output and truncated Claude output", async () => {
@@ -114,7 +120,7 @@ it("rejects incomplete OpenAI output and truncated Claude output", async () => {
         mime: "image/png",
         bytes: Buffer.from("x"),
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow(ZodError);
   }
 });
 
@@ -164,7 +170,7 @@ it("model lookup uses only the requested provider key and excludes incompatible 
   );
   expect(JSON.stringify((await aiStatus()))).not.toContain("only");
   (await saveAIConfig({ provider: "openai", model: "gpt-4.1", removeKey: true }));
-  await expect(availableAIModels(undefined, "openai")).rejects.toThrow();
+  await expect(availableAIModels(undefined, "openai")).rejects.toThrow("API-võti");
   expect((await readAIConfig("anthropic")).apiKey).toBe("claude-only");
 });
 

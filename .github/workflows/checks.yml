@@ -21,6 +21,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
+      # Browser tests use the runner's Microsoft Edge and a fresh test database.
+      - run: npm run test:e2e
       - run: npm audit --omit=dev
       - run: npm run audit:dependencies
       - run: node scripts/audit-source.mjs

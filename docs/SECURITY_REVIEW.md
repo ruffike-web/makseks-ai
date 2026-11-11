@@ -1,5 +1,22 @@
 # Koodi- ja turvaülevaatus / Code and security review
 
+## 0.8.3 koodiülevaatuse parandused / Code review fixes — 11.11.2026
+
+[GitHubi issue #2](https://github.com/ruffike-web/makseks-ai/issues/2) välise koodiülevaatuse põhjal parandati andmete ja maksete turvalisust mõjutavad vead ning lisati puuduvad testid. EXE allkirjastamine (punkt 16) ja ülevaatuse madalama prioriteediga punktid (12, 13, 15, 26–29, 31, 32) jäid sellest väljalaskest välja.
+
+- **Ekspordivalik (20):** värskendamine ei märgi enam kasutaja eemaldatud arvet uuesti maksefaili. Uued valmis arved valitakse endiselt automaatselt. Kaetud ühik- ja brauseritestiga; brauseritest kukub vana koodiga läbi.
+- **Andmete terviklus (3, 4):** kustutamine nõuab arve kehtivat versiooni. Eksporditud arve „kustutamine” arhiveerib selle ja säilitab staatuse EKSPORDITUD. Tarnija meeldejätmine ei kustuta salvestatud registrikoodi.
+- **AI seadistus (5, 6, 7):** teenusepakkuja vahetusel salvestatakse seadistus enne nõusoleku tühistamist. Keskkonnamuutujatest loetud API-võtmeid ei kirjutata faili. Rikutud seadistusfail tõstetakse varukoopiaks kõrvale (`ai-config.json.corrupt-*`) ja seadeid saab uuesti salvestada.
+- **API (19, 23, 24):** nõusolekukontroll on eraldi testitud funktsioon ja marsruuditestid katavad üleslaadimise ning seadete kaitse. Vigane JSON annab kindla eestikeelse teate. Liigsete teeosadega päringud tagastavad 404. Klient kontrollib vastuse olekut enne JSON-i lugemist.
+- **Töölauarakendus (9, 10, 11):** server peatub ka signaaliga lõpetatud protsessi korral ning sulgemine ei jää ootama. Korraga saab käia üks import ja sulgemine ootab selle lõpuni. Ebaõnnestunud käivitus pärast importi näitab akent ja veateadet.
+- **Testid ja CI (1, 8, 14, 17, 18, 30):** GitHubi kontroll käivitab brauseritestid värske andmebaasiga (`scripts/e2e-server.mjs`). Impordi nõutud veerud tuletatakse migratsioonidest. Lisati testid võtmekaitse vanemprotsessile ja paketi faililoendile. Nõrgad `toThrow()` kontrollid said konkreetse teate; LHV negatiivsed testid kasutavad LHV maksjat (varem kukkusid need läbi maksja kontrolli tõttu). Lisati ajavahetuse ja piirväärtuste juhud ning migratsioonitest olemasolevate andmetega.
+- **Audit (16, osaliselt):** privaatsusauditid ütlevad nüüd, kui kohalike võtmete otsing jäi `.env` puudumise tõttu vahele.
+- **Sõltuvus:** `fast-xml-parser` 5.11.2 → 5.12.0 ([GHSA-474x-hrwr-fgx4](https://github.com/advisories/GHSA-474x-hrwr-fgx4), madal).
+
+Akna pealkirjas kuvatakse programmi versioon. Kontrollid: 223 ühiktesti, 9 brauseritesti, TypeScript, ESLint, ehitus, `npm audit --omit=dev` (0), sõltuvuspoliitika, paketi privaatsusaudit ja kuus pakendatud rakenduse kontrolli. Andmebaasi importi menüüst ei testitud pakendatud rakenduses automaatselt; impordi loogika on kaetud ühiktestidega.
+
+English: fixes from external code review issue #2 — export selection persistence, versioned delete, registration-code retention, atomic AI provider switch, no env keys on disk, corrupt AI config recovery, stricter API routes and client error handling, desktop import/quit/stop hardening, consent/key-protection/packaging/import tests, e2e tests in CI and stronger assertions. EXE signing and lower-priority items remain open. `fast-xml-parser` updated to 5.12.0.
+
 ## minimatch'i turvateade / minimatch advisory — 03.11.2026
 
 Pärast 0.8.1 avaldamist ebaõnnestus GitHub Actionsi samm `npm run audit:dependencies`: 30.10.2026 avaldatud [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) (mõõdukas) puudutab `minimatch`-i versioone alla 11.0.1. Viga asub funktsioonis `firstPhasePreProcess()`. See käivitub ainult siis, kui kutsuja kasutab sätet `optimizationLevel >= 2` ja ründaja saab ise määrata glob-mustri. Kõik mõjutatud koopiad on arendus- ja ehitustööriistades (ESLint, electron-builder); tootmissõltuvuste audit oli ja jääb 0. Windowsi paketti `minimatch` ei kuulu.

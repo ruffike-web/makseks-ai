@@ -110,23 +110,31 @@ describe.each(["SEB", "LHV"] as const)("%s adapter", (bank) => {
     expect(xml).not.toContain("SplmtryData");
   });
   it("rejects invalid amount and IBAN even if called outside the UI", () => {
+    // Use a payer valid for this bank so each case fails on the payment itself.
+    const bankPayer = {
+      ...payer,
+      preferredBank: bank,
+      iban: bank === "LHV" ? "EE337700771001260958" : payer.iban,
+      bic: bank === "LHV" ? "LHVBEE22" : payer.bic,
+    };
+    expect(bankAdapters[bank].buildPaymentFile([payment], bankPayer, options)).toContain("<CstmrCdtTrfInitn>");
     expect(() =>
       bankAdapters[bank].buildPaymentFile(
         [{ ...payment, amount: "-1" }],
-        payer,
+        bankPayer,
         options,
       ),
-    ).toThrow();
+    ).toThrow("Makse sisaldab vigaseid või puuduvaid andmeid.");
     expect(() =>
       bankAdapters[bank].buildPaymentFile(
         [{ ...payment, creditorIban: "bad" }],
-        payer,
+        bankPayer,
         options,
       ),
-    ).toThrow();
+    ).toThrow("Makse sisaldab vigaseid või puuduvaid andmeid.");
     expect(() =>
-      bankAdapters[bank].buildPaymentFile([], payer, options),
-    ).toThrow();
+      bankAdapters[bank].buildPaymentFile([], bankPayer, options),
+    ).toThrow("Vali 1–500 kinnitatud makset.");
   });
 });
 it("validates original SEB golden against original XSD and rejects broken XML", async () => {

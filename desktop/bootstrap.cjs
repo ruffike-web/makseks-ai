@@ -63,24 +63,31 @@ async function migrate(filename, directory) {
     db.close();
   }
 }
-function validateImportedSchema(filename) {
+function requiredColumns(migrations) {
+  // Derive the expected schema from the bundled migrations so the check can
+  // never drift from the application's real tables.
+  const reference = new DatabaseSync(":memory:");
+  try {
+    for (const name of fs.readdirSync(migrations).filter((n) => /^\d/.test(n)).sort())
+      reference.exec(fs.readFileSync(path.join(migrations, name, "migration.sql"), "utf8"));
+    const tables = reference
+      .prepare("SELECT name FROM sqlite_master WHERE type='table' AND substr(name, 1, 7) <> 'sqlite_' AND substr(name, 1, 1) <> '_'")
+      .all()
+      .map((row) => row.name);
+    return Object.fromEntries(
+      tables.map((table) => [
+        table,
+        reference.prepare("SELECT name FROM pragma_table_info(?)").all(table).map((row) => row.name),
+      ]),
+    );
+  } finally {
+    reference.close();
+  }
+}
+function validateImportedSchema(filename, migrations) {
   // Migration history is supplied by the imported file, so it cannot prove
   // that the columns required by the current application actually exist.
-  const required = {
-    Settings: ["id", "data", "updatedAt"],
-    Invoice: [
-      "id", "companyId", "version", "sourceFileName", "sourceFileHash", "data",
-      "originalData", "provenance", "extractionMethod", "extractionNote",
-      "accountCandidates", "approvedAt", "approvalContext", "duplicateAcknowledged",
-      "accountChangeAcknowledged", "exportedAt", "exportedVersion", "archivedAt",
-      "createdAt", "updatedAt",
-    ],
-    Supplier: ["id", "identity", "companyId", "data", "createdAt", "updatedAt"],
-    ExportRecord: [
-      "id", "companyId", "bank", "invoiceIds", "total", "xmlHash", "fingerprints",
-      "createdAt",
-    ],
-  };
+  const required = requiredColumns(migrations);
   const db = new DatabaseSync(filename, { readOnly: true });
   try {
     for (const [table, columns] of Object.entries(required)) {
@@ -125,7 +132,7 @@ async function importDatabase(source, target, migrations) {
   }
   try {
     await migrate(temporary, migrations);
-    validateImportedSchema(temporary);
+    validateImportedSchema(temporary, migrations);
     if (fs.existsSync(target)) {
       const db = new DatabaseSync(target);
       const folder = path.join(path.dirname(target), "backups");
@@ -173,7 +180,7 @@ async function start() {
       }
     }, 2000).unref();
 }
-module.exports = { migrate, importDatabase };
+module.exports = { migrate, importDatabase, requiredColumns };
 if (require.main === module)
   start().catch(() => {
     console.error("Rakenduse andmebaasi või serveri käivitamine ebaõnnestus.");

@@ -47,9 +47,7 @@ function updateMenu() {
           {
             label: text("Impordi olemasolev andmebaas…", "Import existing database…"),
             click: () =>
-              importData().catch((e) =>
-                dialog.showErrorBox("Import", e.message),
-              ),
+              importData().catch((e) => showError(text("Andmete import", "Data import"), e.message)),
           },
           {
             label: text("Ava andmekaust", "Open data folder"),
@@ -79,7 +77,14 @@ const serverRoot = path.join(resources, "server");
 let child,
   window,
   origin,
+  importing = null,
   quitting = false;
+function showError(title, message) {
+  return window && !window.isDestroyed()
+    ? dialog.showMessageBox(window, { type: "error", title, message })
+    : dialog.showErrorBox(title, message);
+}
+const exited = (process) => process.exitCode !== null || process.signalCode !== null;
 const token = randomBytes(32).toString("hex");
 function environment() {
   return {
@@ -96,11 +101,19 @@ function environment() {
 async function stopServer() {
   const running = child;
   child = null;
-  if (running && running.exitCode === null)
-    await new Promise((resolve) => {
-      running.once("exit", resolve);
-      running.kill();
-    });
+  if (!running || exited(running)) return;
+  await new Promise((resolve) => {
+    // A process killed by a signal has a null exitCode; resolve on exit, on
+    // error, or after a grace period so quitting can never hang.
+    const timer = setTimeout(resolve, 5000);
+    const done = () => {
+      clearTimeout(timer);
+      resolve();
+    };
+    running.once("exit", done);
+    running.once("error", done);
+    if (!running.kill()) done();
+  });
 }
 async function launchServer() {
   const port = await new Promise((resolve, reject) => {
@@ -125,7 +138,7 @@ async function launchServer() {
     failed = true;
   });
   for (let i = 0; i < 200; i++) {
-    if (failed || running.exitCode !== null)
+    if (failed || exited(running))
       throw new Error(text("Kohaliku serveri käivitamine ebaõnnestus.", "The local server could not start."));
     try {
       const response = await fetch(`${origin}/api/companies`, {
@@ -139,6 +152,16 @@ async function launchServer() {
   throw new Error(text("Rakenduse käivitamine võttis liiga kaua aega.", "The application took too long to start."));
 }
 async function importData() {
+  // One import at a time; a second menu click while one runs is ignored.
+  if (importing || quitting) return;
+  importing = chooseAndImport();
+  try {
+    await importing;
+  } finally {
+    importing = null;
+  }
+}
+async function chooseAndImport() {
   const result = await dialog.showOpenDialog(window, {
     title: text("Vali olemasolev Makseks AI andmebaas", "Select an existing Makseks AI database"),
     properties: ["openFile"],
@@ -154,9 +177,10 @@ async function importData() {
     detail:
       text("Praegustest andmetest tehakse varukoopia. Algset valitud faili ei muudeta.", "Your current data will be backed up. The selected original file will not be changed."),
   });
-  if (confirmation.response !== 1) return;
+  if (confirmation.response !== 1 || quitting) return;
   window.hide();
   await stopServer();
+  let importError = null;
   try {
     await new Promise((resolve, reject) => {
       const job = spawn(
@@ -186,12 +210,21 @@ async function importData() {
     });
     await session.defaultSession.clearStorageData();
   } catch (e) {
-    dialog.showErrorBox(text("Andmete import", "Data import"), e.message);
-  } finally {
+    importError = e;
+  }
+  // The app is quitting: the import finished, so do not restart the server.
+  if (quitting) return;
+  try {
     await launchServer();
     await window.loadURL(origin);
+  } catch (e) {
     window.show();
+    await showError("Makseks AI", e.message);
+    app.quit();
+    return;
   }
+  window.show();
+  if (importError) await showError(text("Andmete import", "Data import"), importError.message);
 }
 if (!app.requestSingleInstanceLock()) app.quit();
 else {
@@ -234,7 +267,7 @@ else {
         height: 940,
         minWidth: 780,
         minHeight: 600,
-        title: "Makseks AI",
+        title: `Makseks AI ${app.getVersion()}`,
         show: false,
         webPreferences: {
           nodeIntegration: false,
@@ -242,6 +275,8 @@ else {
           sandbox: true,
         },
       });
+      // Keep the version in the title bar; pages would otherwise replace it.
+      window.on("page-title-updated", (event) => event.preventDefault());
       await window.loadFile(path.join(__dirname, "loading.html"), {
         query: { language },
       });
@@ -278,6 +313,11 @@ else {
     if (quitting) return;
     event.preventDefault();
     quitting = true;
-    stopServer().finally(() => app.quit());
+    // Let a running import finish so it never replaces app.db after exit or
+    // races a later start; then stop the server.
+    Promise.resolve(importing)
+      .catch(() => {})
+      .then(stopServer)
+      .finally(() => app.quit());
   });
 }

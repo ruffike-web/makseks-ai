@@ -68,11 +68,23 @@ test("search, ten-row pages, sorting, export selection and archive restoration",
   await expect(rows.first().getByRole("checkbox")).toBeChecked();
   await page.getByRole("button", { name: "Lehekülg 1", exact: true }).click();
   await expect(firstSelection).not.toBeChecked();
+  // Also leave out an invoice that this test does not archive below.
+  const keptOut = rows.filter({ hasNotText: /LIST-12(?!\d)/ }).nth(1);
+  const unticked = (await keptOut.textContent())!.match(/LIST-\d+/)![0];
+  await keptOut.getByRole("checkbox").uncheck();
 
   await page.getByRole("button", { name: "Arvete kontroll", exact: true }).click();
   await page.getByLabel("Otsi arveid").fill("LIST-12");
   await rows.first().getByRole("button", { name: "Arhiveeri arve LIST-12", exact: true }).click();
   await expect(rows).toHaveCount(0);
+  // Archiving another invoice refreshes state but must not re-select the
+  // invoice the user deliberately left out of the payment file.
+  await page.getByLabel("Otsi arveid").fill("");
+  await page.getByRole("button", { name: "Maksefail", exact: true }).click();
+  const untickedRow = rows.filter({ hasText: new RegExp(`${unticked}(?!\\d)`) });
+  await expect(untickedRow).toHaveCount(1);
+  await expect(untickedRow.getByRole("checkbox")).not.toBeChecked();
+  await page.getByRole("button", { name: "Arvete kontroll", exact: true }).click();
   const state: AppState = await (await request.get("/api/state", { headers })).json();
   expect(state.invoices).toHaveLength(11);
   expect(state.archivedInvoices).toHaveLength(1);

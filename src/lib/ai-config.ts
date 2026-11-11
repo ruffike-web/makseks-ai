@@ -8,6 +8,8 @@ import { protectKeys } from "./ai-key-protection";
 const entrySchema = z.object({
   apiKey: z.string().trim().max(512).default(""),
   protectedApiKey: z.string().min(1).max(8192).optional(),
+  // Set when the user removes a key, so an environment fallback stays off too.
+  envKeyDisabled: z.boolean().optional(),
   model: z
     .string()
     .trim()
@@ -30,42 +32,56 @@ function configPath() {
     resolve(process.env.ARVE_DATA_DIR || "data", "ai-config.json")
   );
 }
+const envPrefix: Record<AIProviderId, string> = {
+  gemini: "GEMINI",
+  openai: "OPENAI",
+  anthropic: "ANTHROPIC",
+  groq: "GROQ",
+  mistral: "MISTRAL",
+};
+/** Environment keys are read at use time and never written to the config file. */
+function envKey(id: AIProviderId) {
+  return process.env[`${envPrefix[id]}_API_KEY`]?.trim() || "";
+}
 function defaults() {
   return {
     provider: "gemini" as AIProviderId,
-    providers: {
-      groq: { apiKey: process.env.GROQ_API_KEY || "", model: process.env.GROQ_MODEL || aiProviders.groq.defaultModel },
-      mistral: { apiKey: process.env.MISTRAL_API_KEY || "", model: process.env.MISTRAL_MODEL || aiProviders.mistral.defaultModel },
-      gemini: {
-        apiKey: process.env.GEMINI_API_KEY || "",
-        model: process.env.GEMINI_MODEL || aiProviders.gemini.defaultModel,
-      },
-      openai: {
-        apiKey: process.env.OPENAI_API_KEY || "",
-        model: process.env.OPENAI_MODEL || aiProviders.openai.defaultModel,
-      },
-      anthropic: {
-        apiKey: process.env.ANTHROPIC_API_KEY || "",
-        model:
-          process.env.ANTHROPIC_MODEL || aiProviders.anthropic.defaultModel,
-      },
-    },
+    providers: Object.fromEntries(
+      aiProviderIds.map((id) => [
+        id,
+        {
+          apiKey: "",
+          model:
+            process.env[`${envPrefix[id]}_MODEL`] || aiProviders[id].defaultModel,
+        },
+      ]),
+    ) as Record<AIProviderId, { apiKey: string; model: string }>,
   };
 }
 function readStored(): Config {
+  const file = configPath();
+  let text: string;
   try {
-    const raw = JSON.parse(
-      readFileSync(/* turbopackIgnore: true */ configPath(), "utf8"),
-    );
-    if (raw.provider) return schema.parse({ ...raw, providers: { ...defaults().providers, ...raw.providers } });
-    const legacy = entrySchema.parse(raw),
-      config = defaults();
-    config.providers.gemini = legacy;
-    return config;
+    text = readFileSync(/* turbopackIgnore: true */ file, "utf8");
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT")
       return schema.parse(defaults());
     throw new Error("AI seadistuse lugemine ebaõnnestus.");
+  }
+  try {
+    const raw = JSON.parse(text);
+    if (raw.provider) return schema.parse({ ...raw, providers: { ...defaults().providers, ...raw.providers } });
+    const legacy = entrySchema.parse(raw),
+      config = defaults();
+    config.providers.gemini = legacy;
+    return schema.parse(config);
+  } catch {
+    // A damaged file must not lock the user out of AI settings. Keep it aside
+    // for inspection and continue from defaults; the keys must be re-entered.
+    const backup = `${file}.corrupt-${Date.now()}`;
+    renameSync(file, backup);
+    console.warn(`AI settings file was unreadable and was moved to ${backup}.`);
+    return schema.parse(defaults());
   }
 }
 type Config = z.infer<typeof schema>;
@@ -110,6 +126,9 @@ async function readAll() {
     all.providers[id].apiKey = decrypted[index] ?? "";
     if (decrypted[index] === null) locked.add(id);
   }
+  for (const id of aiProviderIds)
+    if (!all.providers[id].apiKey && !locked.has(id) && !stored.providers[id].envKeyDisabled)
+      all.providers[id].apiKey = envKey(id);
   return { stored, all, locked };
 }
 
@@ -155,7 +174,13 @@ export function saveAIConfig(input: {
     const replacing = input.removeKey || Boolean(input.apiKey?.trim());
     current.providers[provider] = entrySchema.parse({
       ...entry,
-      ...(replacing ? { apiKey: input.removeKey ? "" : input.apiKey!.trim(), protectedApiKey: undefined } : {}),
+      ...(replacing
+        ? {
+            apiKey: input.removeKey ? "" : input.apiKey!.trim(),
+            protectedApiKey: undefined,
+            envKeyDisabled: input.removeKey ? true : undefined,
+          }
+        : {}),
       model: input.model,
     });
     current.provider = provider;

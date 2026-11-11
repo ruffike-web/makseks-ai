@@ -193,7 +193,7 @@ export function SettingsView({
           companyId={state.companyId}
           provider={state.aiProvider}
           providers={state.aiProviders}
-          onProviderChanged={() => setForm({ ...form, aiEnabled: false })}
+          onProviderChanged={() => setForm((current) => ({ ...current, aiEnabled: false }))}
           refresh={refresh}
         />
         <section className="panel">

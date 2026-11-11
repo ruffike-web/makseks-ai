@@ -307,11 +307,6 @@ test("LHV export validates against complete XSD and groups three dates", async (
   await page.goto("/");
   await page.getByRole("button", { name: "Maksefail", exact: true }).click();
   await expect(
-    page.getByText("Tean, et LHV täielik XSD kontroll puudub", {
-      exact: false,
-    }),
-  ).toHaveCount(0);
-  await expect(
     page.getByRole("button", { name: "Genereeri maksefail" }),
   ).toBeEnabled();
   const response = await request.post("/api/export", {

@@ -1,3 +1,4 @@
+import { ZodError } from "zod";
 import { describe, it, expect } from "vitest";
 import { blankInvoice } from "../src/lib/domain";
 import {
@@ -45,14 +46,14 @@ describe("uploads and extraction", () => {
   it("enforces strict structured responses and never invents missing data", () => {
     const v = blankInvoice();
     expect(parseExtractionResponse(JSON.stringify(v)).amountDue).toBeNull();
-    expect(() => parseExtractionResponse('{"supplierName":"Test"}')).toThrow();
+    expect(() => parseExtractionResponse('{"supplierName":"Test"}')).toThrow(ZodError);
     expect(() =>
       parseExtractionResponse(JSON.stringify({ ...v, extra: "instruction" })),
-    ).toThrow();
+    ).toThrow(ZodError);
     expect(() =>
       parseExtractionResponse(JSON.stringify({ ...v, amountDue: 123 })),
-    ).toThrow();
-    expect(() => parseExtractionResponse("not json")).toThrow();
+    ).toThrow(ZodError);
+    expect(() => parseExtractionResponse("not json")).toThrow(SyntaxError);
   });
   it("keeps manual entry available without provider and isolates provider failures", async () => {
     const noProvider = await extractInvoice(png, "image/png", null);

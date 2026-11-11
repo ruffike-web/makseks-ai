@@ -16,6 +16,12 @@ try {
   await expect(
     page.getByRole("heading", { name: "Lisa ostuarved", exact: true }),
   ).toBeVisible({ timeout: 30000 });
+  const { version } = JSON.parse(await readFile("desktop/app/package.json", "utf8"));
+  const title = await application.evaluate(({ BrowserWindow }) =>
+    BrowserWindow.getAllWindows()[0].getTitle(),
+  );
+  if (title !== `Makseks AI ${version}`)
+    throw new Error(`Unexpected window title: ${title}`);
   await page
     .getByRole("button", { name: "Lisa ettevõte", exact: true })
     .click();

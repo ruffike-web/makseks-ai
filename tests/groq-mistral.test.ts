@@ -70,6 +70,8 @@ for (const provider of ["groq", "mistral"] as const) {
       const [url, init] = mock.mock.calls[0];
       expect(url).toBe(provider === "groq" ? "https://api.groq.com/openai/v1/chat/completions" : "https://api.mistral.ai/v1/ocr");
       expect(init.headers.Authorization).toBe(`Bearer ${provider}-secret`);
+      expect(init.redirect).toBe("error");
+      expect(init.signal).toBeInstanceOf(AbortSignal);
       const body = JSON.parse(init.body);
       if (provider === "groq") {
         expect(body.messages[1].content[1].image_url.url).toMatch(/^data:image\/png;base64,/);

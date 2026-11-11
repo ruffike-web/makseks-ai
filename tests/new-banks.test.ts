@@ -39,8 +39,8 @@ describe.each(["COOP", "SWEDBANK"] as const)("%s official schema", (bank) => {
     } finally { bankProfiles[bank].schema.main = main; }
   });
   it("rejects missing address fields and an account from the wrong bank", () => {
-    expect(() => build([{ ...payment, creditorAddress: "Tee 1" }])).toThrow();
-    expect(() => bankAdapters[bank].buildPaymentFile([payment], { ...payer, iban: "EE121010000000000016" })).toThrow();
+    expect(() => build([{ ...payment, creditorAddress: "Tee 1" }])).toThrow("Makse sisaldab vigaseid või puuduvaid andmeid.");
+    expect(() => bankAdapters[bank].buildPaymentFile([payment], { ...payer, iban: "EE121010000000000016" })).toThrow("Maksja Eesti IBAN ei kuulu valitud");
   });
 });
 it("validates original Swedbank domestic and European examples", async () => {
@@ -49,6 +49,10 @@ it("validates original Swedbank domestic and European examples", async () => {
 });
 it("Swedbank enforces its name and combined remittance limits", () => {
   const payer = { ...defaultSettings(), companyName: "Test OÜ", iban: "EE382200221020145685", bic: "HABAEE2X" };
-  expect(() => bankAdapters.SWEDBANK.buildPaymentFile([{ ...payment, creditorName: "A".repeat(71) }], payer)).toThrow();
-  expect(() => bankAdapters.SWEDBANK.buildPaymentFile([{ ...payment, description: "A".repeat(124) }], payer)).toThrow();
+  const build = (changes: Partial<Payment>) => bankAdapters.SWEDBANK.buildPaymentFile([{ ...payment, ...changes }], payer);
+  // Name limit 70; description plus the 7-digit reference limit 130.
+  expect(build({ creditorName: "A".repeat(70) })).toContain("<Nm>" + "A".repeat(70) + "</Nm>");
+  expect(() => build({ creditorName: "A".repeat(71) })).toThrow("Makse sisaldab vigaseid või puuduvaid andmeid.");
+  expect(build({ description: "A".repeat(123) })).toContain("A".repeat(123));
+  expect(() => build({ description: "A".repeat(124) })).toThrow("selgitus ja viitenumber võivad kokku olla kuni 130 märki");
 });

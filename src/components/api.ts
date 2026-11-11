@@ -16,8 +16,22 @@ export async function api<T = unknown>(
       body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
     cache: "no-store",
   });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error || "Päring ebaõnnestus.");
+  const text = await response.text();
+  let data: unknown = null;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = null;
+  }
+  if (!response.ok) {
+    const error =
+      data && typeof data === "object" && "error" in data && typeof data.error === "string"
+        ? data.error
+        : `Päring ebaõnnestus (${response.status}).`;
+    throw new Error(error);
+  }
+  if (data === null)
+    throw new Error("Rakendus saatis vigase vastuse. Värskenda lehte ja proovi uuesti.");
   return data as T;
 }
 export function euro(value: string) {

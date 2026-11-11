@@ -48,3 +48,14 @@ describe("interface translations", () => {
     }
   });
 });
+
+it("translates request and response errors shown after failed API calls", () => {
+  for (const message of [
+    "Päringu andmed on vigased. Värskenda lehte ja proovi uuesti.",
+    "Päringu töötlemine ebaõnnestus. Värskenda lehte ja proovi uuesti.",
+    "Rakendus saatis vigase vastuse. Värskenda lehte ja proovi uuesti.",
+    "Taasta arve enne muutmist või kinnitamist.",
+  ])
+    expect(translateMessage("en", message), message).not.toBe(message);
+  expect(translateMessage("en", "Päring ebaõnnestus (502).")).toBe("Request failed (502).");
+});

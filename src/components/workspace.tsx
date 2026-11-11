@@ -41,6 +41,7 @@ import { InvoiceEditor, type Preview } from "./invoice-editor";
 import { SupplierEditor } from "./supplier-editor";
 import type { SupplierData } from "@/lib/suppliers";
 import { invoiceList, supplierList, listPage, type InvoiceOrder } from "@/lib/list-view";
+import { nextExportSelection } from "@/lib/export-selection";
 import { Pagination } from "./pagination";
 type View = "import" | "review" | "export" | "suppliers" | "settings";
 const navigation = [
@@ -154,7 +155,8 @@ export function CompanyWorkspace({
     } | null>(null);
   const previews = useRef<Record<string, Preview>>({}),
     fileInput = useRef<HTMLInputElement>(null),
-    downloadRef = useRef<string | null>(null);
+    downloadRef = useRef<string | null>(null),
+    readyIds = useRef<string[]>([]);
   const [today, setToday] = useState(() => estoniaToday());
   useEffect(() => {
     // Update only the visual reminder; keep approval and selection untouched.
@@ -171,9 +173,12 @@ export function CompanyWorkspace({
   const refresh = useCallback(async () => {
     const next = await api<AppState>("state");
     setState(next);
-    setSelected(
-      next.invoices.filter((i) => i.status === "READY").map((i) => i.id),
-    );
+    const ready = next.invoices
+      .filter((i) => i.status === "READY")
+      .map((i) => i.id);
+    const previousReady = readyIds.current;
+    readyIds.current = ready;
+    setSelected((selected) => nextExportSelection(selected, previousReady, ready));
     return next;
   }, [api]);
   useEffect(() => {
@@ -453,7 +458,7 @@ export function CompanyWorkspace({
                             )
                           )
                             void perform(async () => {
-                              await api(`invoices/${i.id}`, "DELETE");
+                              await api(`invoices/${i.id}?version=${i.version}`, "DELETE");
                               if (previews.current[i.id]) {
                                 URL.revokeObjectURL(previews.current[i.id].url);
                                 delete previews.current[i.id];

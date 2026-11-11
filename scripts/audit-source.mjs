@@ -17,4 +17,4 @@ for (const file of files) {
   if (secrets.some((secret) => contents.includes(secret)) || /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/.test(contents.toString("utf8")))
     throw new Error(`Credential detected in Git index: ${file}`);
 }
-console.log(`Source privacy audit PASS: ${files.length} staged/tracked files; no private paths or known local credentials.`);
+console.log(`Source privacy audit PASS: ${files.length} staged/tracked files; no private paths or private keys; ${secrets.length ? `no known local credentials (${secrets.length} checked)` : "local credential scan skipped (no keys in .env)"}.`);

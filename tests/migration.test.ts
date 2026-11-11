@@ -67,3 +67,22 @@ it("does not infer exported versions for legacy edits even immediately after exp
     db.close();
   }
 });
+
+it("keeps existing export history when the ExportRecord table is rebuilt", () => {
+  const db = new DatabaseSync(":memory:");
+  try {
+    const rebuild = "20261006162725_exported_fingerprints";
+    for (const name of readdirSync("prisma/migrations").filter((n) => /^\d/.test(n) && n < rebuild).sort())
+      db.exec(readFileSync(`prisma/migrations/${name}/migration.sql`, "utf8"));
+    db.exec(`INSERT INTO ExportRecord(id,bank,invoiceIds,total,xmlHash,createdAt) VALUES
+      ('first','SEB','["a","b"]','10.10','hash-1','2026-10-06T08:00:00.000Z'),
+      ('second','LHV','["c"]','2.50','hash-2','2026-10-06T09:00:00.000Z');`);
+    db.exec(readFileSync(`prisma/migrations/${rebuild}/migration.sql`, "utf8"));
+    expect(db.prepare("SELECT id,bank,invoiceIds,total,xmlHash,fingerprints,createdAt FROM ExportRecord ORDER BY id").all()).toEqual([
+      { id: "first", bank: "SEB", invoiceIds: '["a","b"]', total: "10.10", xmlHash: "hash-1", fingerprints: "[]", createdAt: "2026-10-06T08:00:00.000Z" },
+      { id: "second", bank: "LHV", invoiceIds: '["c"]', total: "2.50", xmlHash: "hash-2", fingerprints: "[]", createdAt: "2026-10-06T09:00:00.000Z" },
+    ]);
+  } finally {
+    db.close();
+  }
+});

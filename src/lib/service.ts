@@ -307,7 +307,13 @@ export class InvoiceService {
     return this.db.$transaction(async (store) => {
       const state = await this.snapshot(store),
         item = state.invoices.find((i) => i.id === id);
-      if (!item?.supplier)
+      if (!item)
+        throw new Error(
+          state.archivedInvoices.some((i) => i.id === id)
+            ? "Taasta arve enne muutmist või kinnitamist."
+            : "Arvet ei leitud.",
+        );
+      if (!item.supplier)
         throw new Error("Kinnitatud tarnijaandmed puuduvad.");
       const data = { ...item.data },
         provenance = { ...item.provenance },
@@ -342,7 +348,12 @@ export class InvoiceService {
     return this.db.$transaction(async (store) => {
       const state = await this.snapshot(store),
         item = state.invoices.find((i) => i.id === id);
-      if (!item) throw new Error("Arvet ei leitud.");
+      if (!item)
+        throw new Error(
+          state.archivedInvoices.some((i) => i.id === id)
+            ? "Taasta arve enne muutmist või kinnitamist."
+            : "Arvet ei leitud.",
+        );
       if (ack.reviewContext !== item.reviewContext)
         throw new Error(
           "Makse seaded või kuupäev on vahepeal muutunud. Sulge arve, värskenda lehte ja kontrolli makseandmed uuesti.",
@@ -377,7 +388,8 @@ export class InvoiceService {
           existing = item.supplier;
         const trusted: Omit<SupplierData, "id"> = {
           name: i.supplierName!,
-          registrationCode: i.supplierRegistrationCode,
+          registrationCode:
+            i.supplierRegistrationCode ?? existing?.registrationCode ?? null,
           defaultCurrency: existing?.defaultCurrency ?? null,
           trustedIbans: [
             ...new Set([...(existing?.trustedIbans ?? []), i.supplierIban!]),
@@ -429,25 +441,23 @@ export class InvoiceService {
         throw new Error("Arve on vahepeal muutunud. Värskenda vaadet.");
     });
   }
-  async deleteInvoice(id: string) {
+  async deleteInvoice(id: string, version: number) {
     await this.db.$transaction(async (store) => {
-      const row = await store.invoice.findUniqueOrThrow({
+      const row = await store.invoice.findUnique({
         where: { id, companyId: this.companyId },
       });
-      if (row.exportedAt)
-        await store.invoice.update({
-          where: { id, companyId: this.companyId },
-          data: {
-            archivedAt: this.now(),
-            approvedAt: null,
-            approvalContext: null,
-            version: { increment: 1 },
-          },
-        });
-      else
-        await store.invoice.delete({
-          where: { id, companyId: this.companyId },
-        });
+      // An exported invoice is kept for duplicate protection: "delete" archives
+      // it and leaves its version and approval intact so it stays EXPORTED.
+      const result = row?.exportedAt
+        ? await store.invoice.updateMany({
+            where: { id, companyId: this.companyId, version, archivedAt: null },
+            data: { archivedAt: this.now() },
+          })
+        : await store.invoice.deleteMany({
+            where: { id, companyId: this.companyId, version },
+          });
+      if (!result.count)
+        throw new Error("Arve on vahepeal muutunud. Värskenda vaadet.");
     });
   }
   async deleteSupplier(id: string) {

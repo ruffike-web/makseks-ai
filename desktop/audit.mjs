@@ -43,5 +43,9 @@ async function audit(directory) {
 }
 await audit(root);
 console.log(
-  `Release privacy audit PASS: ${count} files, no databases, configuration files or known local credentials.`,
+  `Release privacy audit PASS: ${count} files, no databases or configuration files; ${
+    secrets.length
+      ? `no known local credentials (${secrets.length} checked)`
+      : "local credential scan skipped (no keys in .env)"
+  }.`,
 );

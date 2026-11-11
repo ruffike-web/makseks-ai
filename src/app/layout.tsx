@@ -8,8 +8,9 @@ import "@fontsource/manrope/600.css";
 import "@fontsource/manrope/700.css";
 import "@fontsource/manrope/800.css";
 import "./globals.css";
+import packageInfo from "../../package.json";
 export const metadata: Metadata = {
-  title: "Makseks AI",
+  title: `Makseks AI ${packageInfo.version}`,
   description: "Ostuarvete kontroll ja panga maksefailid",
 };
 export default function RootLayout({

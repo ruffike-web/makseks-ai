@@ -16,3 +16,25 @@ it("refuses to prune user data or project dependencies", async () => {
   await expect(pruneRuntime("data")).rejects.toThrow("outside");
   await expect(pruneRuntime("node_modules")).rejects.toThrow("outside");
 });
+
+it("packages every local module the desktop shell requires", async () => {
+  const { readFileSync, readdirSync } = await import("node:fs");
+  const { createRequire } = await import("node:module");
+  const builder = createRequire(import.meta.url)("../desktop/builder.cjs") as { files: string[] };
+  const shipped = new Set(builder.files);
+  const sources = readdirSync("desktop/app").filter((name) => name.endsWith(".cjs"));
+  const pending: string[] = sources.filter((name) => name === "main.cjs");
+  const seen = new Set<string>();
+  while (pending.length) {
+    const name = pending.pop()!;
+    if (seen.has(name)) continue;
+    seen.add(name);
+    expect(shipped, `${name} must be in desktop/builder.cjs files`).toContain(name);
+    const code = readFileSync(`desktop/app/${name}`, "utf8");
+    for (const match of code.matchAll(/require\(\s*["']\.\/([^"']+)["']\s*\)/g)) pending.push(match[1]);
+    for (const match of code.matchAll(/["']([\w-]+\.html)["']/g)) {
+      expect(shipped, `${match[1]} must be in desktop/builder.cjs files`).toContain(match[1]);
+    }
+  }
+  expect([...seen].sort()).toEqual(["key-protection.cjs", "main.cjs", "paths.cjs"]);
+});

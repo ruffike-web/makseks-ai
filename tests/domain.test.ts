@@ -101,6 +101,16 @@ describe("payment validators", () => {
     expect(estoniaToday(new Date("2026-10-05T21:30:00Z"))).toBe("2026-10-06");
     expect(estoniaToday(new Date("2026-12-31T22:01:00Z"))).toBe("2027-01-01");
     expect(estoniaToday(new Date("2026-03-29T01:30:00Z"))).toBe("2026-03-29");
+    // Winter (UTC+2): 21:30Z is still the same Tallinn day.
+    expect(estoniaToday(new Date("2026-12-31T21:30:00Z"))).toBe("2026-12-31");
+    expect(estoniaToday(new Date("2026-03-28T21:30:00Z"))).toBe("2026-03-28");
+    // Summer (UTC+3): 21:30Z is already the next Tallinn day.
+    expect(estoniaToday(new Date("2026-07-01T21:30:00Z"))).toBe("2026-07-02");
+    // Around the autumn change (25.10.2026 04:00 EEST -> 03:00 EET).
+    expect(estoniaToday(new Date("2026-10-24T20:59:00Z"))).toBe("2026-10-24");
+    expect(estoniaToday(new Date("2026-10-24T21:00:00Z"))).toBe("2026-10-25");
+    expect(estoniaToday(new Date("2026-10-25T21:59:00Z"))).toBe("2026-10-25");
+    expect(estoniaToday(new Date("2026-10-25T22:00:00Z"))).toBe("2026-10-26");
   });
   it("resolves overdue, today, future and explicit date modes", () => {
     const s = defaultSettings();
